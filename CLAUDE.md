@@ -6,7 +6,7 @@ This project converts game scripts from various scripting systems to the Legion 
 ## Key Files
 - `API.cs`: C# class providing all Legion Scripting access points
 - `API.py`: Auto-generated file from API.cs for IDE autocomplete
-- `assistantdocs/`: Contains documentation for non-Legion scripting systems
+- `assistantdocs/`: Contains documentation for various scripting systems
 
 ## Legion Scripting API
 Legion Scripting is a scripting system for an FNA game using IronPython, allowing players to script in-game functionality.
@@ -18,7 +18,6 @@ Convert scripts from other scripting languages/systems into Legion Scripting API
 
 ### Reference Documentation
 - Use files in `assistantdocs/` folder for documentation on source scripting systems
-- For Razor Enhanced (RE) scripts: Search web for Python-based methods and custom libraries
 - Always examine API.cs and API.py to understand available Legion Scripting methods
 
 ### Conversion Process

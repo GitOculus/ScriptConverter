@@ -1,0 +1,2730 @@
+Razor Enhanced API Reference
+===========================
+
+AutoLoot
+--------
+The Autoloot class allow to interact with the Autoloot Agent, via scripting.
+
+Methods:
+--------
+ChangeList(listName: String) -> Void
+Change the Autoloot's active list.
+GetList(lootListName: String, wantMinusOnes: Boolean = False) -> List[AutoLoot.AutoLootItem]
+Given an AutoLoot list name, return a list of AutoLootItem associated.
+GetLootBag() -> UInt32
+Get current Autoloot destination container.
+Returns: Serial of the container.
+ResetIgnore() -> Void
+Reset the Autoloot ignore list.
+RunOnce(lootListName: String, millisec: Int32, filter: Items.Filter) -> Void
+Start Autoloot with custom parameters.
+SetNoOpenCorpse(noOpen: Boolean) -> Boolean
+Toggle "No Open Corpse" on/off. The change doesn't persist if you reopen razor.
+Returns: Previous value of "No Open Corpse"
+Start() -> Void
+Start the Autoloot Agent on the currently active list.
+Status() -> Boolean
+Check Autoloot Agent status
+Returns: True: if the Autoloot is running - False: otherwise
+Stop() -> Void
+Stop the Autoloot Agent.
+
+
+AutoLoot.AutoLootItem
+---------------------
+
+Properties:
+-----------
+Color: Int32
+Graphics: Int32
+List: String
+LootBagOverride: Int32
+Name: String
+Properties: List[AutoLoot.AutoLootItem.Property]
+Selected: Boolean
+
+
+BandageHeal
+-----------
+
+Methods:
+--------
+Start() -> Void
+Start BandageHeal Agent.
+Status() -> Boolean
+Check BandageHeal Agent status, returns a bool value.
+Returns: True: is running - False: otherwise
+Stop() -> Void
+Stop BandageHeal Agent.
+
+
+BuyAgent
+--------
+The BuyAgent class allow you to interect with the BuyAgent, via scripting.
+
+Methods:
+--------
+ChangeList(listName: String) -> Void
+Change the BuyAgent's active list.
+Disable() -> Void
+Disable BuyAgent Agent.
+Enable() -> Void
+Enable BuyAgent on the currently active list.
+Status() -> Boolean
+Check BuyAgent Agent status
+Returns: True: if the BuyAgent is active - False: otherwise
+
+
+CUO
+---
+The CUO_Functions class contains invocation of CUO code using reflection
+DANGER !!
+
+Methods:
+--------
+CloseGump(serial: UInt32) -> Void
+Invokes the Method close a gump
+CloseMobileHealthBar(mobileserial: Int32) -> Void
+Closes a Mobile Status Gump of an Entity
+CloseMobileHealthBar(mobileserial: UInt32) -> Void
+Closes a Mobile Status Gump of an Entity
+CloseMyStatusBar() -> Void
+Invokes the Method to close your status bar gump inside the CUO code
+CloseTMap() -> Boolean
+Invokes the CloseWithRightClick function inside the CUO code
+First T-Map is retrieved, and then only closed if it is a map
+Returns True if a map was closed, else False
+FollowMobile(mobileserial: UInt32) -> Void
+Make the ClassicUO client follow the specific mobile.
+            
+This is the same behavior as alt + left-clicking, which normally
+shows the overhead message "Now following."
+FollowOff() -> Void
+Stop the ClassicUO client from following, if it was following a
+mobile.
+Following() -> ValueTuple[Boolean, UInt32]
+Returns the status and target of the ClassicUO client's follow
+behavior.
+Returns: bool followingMode, uint followingTarget
+FreeView(free: Boolean) -> Void
+Invokes the FreeView function inside the CUO code
+First value is retrieved, and then only set if its not correct
+GetSetting(settingName: String) -> String
+Retrieve Current CUO Setting
+GoToMarker(x: Int32, y: Int32) -> Void
+Invokes the GoToMarker function inside the CUO code
+Map must be open for this to work
+LoadMarkers() -> Void
+Invokes the LoadMarkers function inside the CUO code
+Map must be open for this to work
+MoveGump(serial: UInt32, x: Int32, y: Int32) -> Void
+Invokes the Method move a gump or container if open.
+OpenContainerAt(bag: Item, x: Int32, y: Int32) -> Void
+Set a location that CUO will open the container at
+OpenContainerAt(bag: UInt32, x: Int32, y: Int32) -> Void
+Set a location that CUO will open the container at
+OpenMobileHealthBar(mobileserial: Int32, x: Int32, y: Int32, custom: Boolean) -> Void
+Open a mobiles health bar at a specified location on the screen
+OpenMobileHealthBar(mobileserial: UInt32, x: Int32, y: Int32, custom: Boolean) -> Void
+Invokes the Method to open your status bar gump inside the CUO code
+OpenMyStatusBar(x: Int32, y: Int32) -> Void
+Invokes the Method to open your status bar gump inside the CUO code
+PlayMacro(macroName: String) -> Void
+Play a CUO macro by name
+Warning, limited testing !!
+ProfilePropertySet(propertyName: String, enable: Boolean) -> Void
+Set a bool Config property in CUO by name
+ProfilePropertySet(propertyName: String, value: Int32) -> Void
+Set a int Config property in CUO by name
+ProfilePropertySet(propertyName: String, value: String) -> Void
+Set a string Config property in CUO by name
+SetGumpOpenLocation(gumpserial: UInt32, x: Int32, y: Int32) -> Void
+Set a location that CUO will open the next gump or container at
+
+
+DPSMeter
+--------
+The DPSMeter class implements a Damage Per Second meter which can be useful to tune meta-builds.(???)
+
+Methods:
+--------
+GetDamage(serial: Int32) -> Int32
+Get total damage per Mobile.
+Returns: Total damage.
+Pause() -> Void
+Pause DPSMeter data recording.
+Start() -> Void
+Start DPSMeter engine.
+Status() -> Boolean
+Check DPSMeter Agent status, returns a bool value.
+Returns: True: is running - False: otherwise
+Stop() -> Void
+Stop DPSMeter engine.
+
+
+Dress
+-----
+
+Methods:
+--------
+ChangeList(dresslist: String) -> Void
+Change dress list, List must be exist in dress/undress Agent tab.
+DressFStart() -> Void
+Start Dress engine.
+DressFStop() -> Void
+Stop Dress engine.
+DressStatus() -> Boolean
+Check Dress Agent status, returns a bool value.
+Returns: True: is running - False: otherwise
+UnDressFStart() -> Void
+Start UnDress engine.
+UnDressFStop() -> Void
+Stop UnDress engine.
+UnDressStatus() -> Boolean
+Check UnDress Agent status, returns a bool value.
+Returns: True: is running - False: otherwise
+
+
+Friend
+------
+
+Methods:
+--------
+AddFriendTarget() -> Void
+
+AddPlayer(friendlist: String, name: String, serial: Int32) -> Void
+Add the player specified to the Friend list named in FriendListName parameter
+ChangeList(friendlist: String) -> Void
+Change friend list, List must be exist in friend list GUI configuration
+GetList(friendlist: String) -> List[Int32]
+Retrive list of serial in list, List must be exist in friend Agent tab.
+IsFriend(serial: Int32) -> Boolean
+Check if Player is in FriendList, returns a bool value.
+Returns: True: if is a friend - False: otherwise
+RemoveFriend(friendlist: String, serial: Int32) -> Boolean
+Remove the player specified from the Friend list named in FriendListName parameter
+
+
+Gumps
+-----
+The Gumps class is used to read and interact with in-game gumps, via scripting.
+NOTE
+----
+During development of scripts that involves interecting with Gumps, is often needed to know gumpids and buttonids.
+For this purpose, can be particularly usefull to use *Inspect Gumps* and *Record*, top right, in the internal RE script editor.
+
+Methods:
+--------
+AddAlphaRegion(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32) -> Void
+
+AddBackground(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, gumpId: Int32) -> Void
+
+AddButton(gd: Gumps.GumpData&@, x: Int32, y: Int32, normalID: Int32, pressedID: Int32, buttonID: Int32, type: Int32, param: Int32) -> Void
+
+AddCheck(gd: Gumps.GumpData&@, x: Int32, y: Int32, inactiveID: Int32, activeID: Int32, initialState: Boolean, switchID: Int32) -> Void
+
+AddGroup(gd: Gumps.GumpData&@, group: Int32) -> Void
+
+AddHtml(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, text: String, background: Boolean, scrollbar: Boolean) -> Void
+
+AddHtml(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, textID: Int32, background: Boolean, scrollbar: Boolean) -> Void
+
+AddHtmlLocalized(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, number: Int32, args: String, color: Int32, background: Boolean, scrollbar: Boolean) -> Void
+
+AddHtmlLocalized(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, number: Int32, color: Int32, background: Boolean, scrollbar: Boolean) -> Void
+
+AddHtmlLocalized(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, number: Int32, background: Boolean, scrollbar: Boolean) -> Void
+
+AddImage(gd: Gumps.GumpData&@, x: Int32, y: Int32, gumpId: Int32, hue: Int32) -> Void
+
+AddImage(gd: Gumps.GumpData&@, x: Int32, y: Int32, gumpId: Int32) -> Void
+
+AddImageTiled(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, gumpId: Int32) -> Void
+
+AddImageTiledButton(gd: Gumps.GumpData&@, x: Int32, y: Int32, normalID: Int32, pressedID: Int32, buttonID: Int32, type: Gumps.GumpButtonType, param: Int32, itemID: Int32, hue: Int32, width: Int32, height: Int32, localizedTooltip: Int32) -> Void
+
+AddImageTiledButton(gd: Gumps.GumpData&@, x: Int32, y: Int32, normalID: Int32, pressedID: Int32, buttonID: Int32, type: Gumps.GumpButtonType, param: Int32, itemID: Int32, hue: Int32, width: Int32, height: Int32) -> Void
+
+AddItem(gd: Gumps.GumpData&@, x: Int32, y: Int32, itemID: Int32, hue: Int32) -> Void
+
+AddItem(gd: Gumps.GumpData&@, x: Int32, y: Int32, itemID: Int32) -> Void
+
+AddLabel(gd: Gumps.GumpData&@, x: Int32, y: Int32, hue: Int32, text: String) -> Void
+
+AddLabel(gd: Gumps.GumpData&@, x: Int32, y: Int32, hue: Int32, textID: Int32) -> Void
+
+AddLabelCropped(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, hue: Int32, text: String) -> Void
+
+AddLabelCropped(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, hue: Int32, textID: Int32) -> Void
+
+AddPage(gd: Gumps.GumpData&@, page: Int32) -> Void
+
+AddRadio(gd: Gumps.GumpData&@, x: Int32, y: Int32, inactiveID: Int32, activeID: Int32, initialState: Boolean, switchID: Int32) -> Void
+
+AddSpriteImage(gd: Gumps.GumpData&@, x: Int32, y: Int32, gumpId: Int32, spriteX: Int32, spriteY: Int32, spriteW: Int32, spriteH: Int32) -> Void
+
+AddTextEntry(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, hue: Int32, entryID: Int32, initialText: String) -> Void
+
+AddTextEntry(gd: Gumps.GumpData&@, x: Int32, y: Int32, width: Int32, height: Int32, hue: Int32, entryID: Int32, initialTextID: Int32) -> Void
+
+AddTooltip(gd: Gumps.GumpData&@, cliloc: Int32, text: String) -> Void
+
+AddTooltip(gd: Gumps.GumpData&@, number: Int32) -> Void
+
+AddTooltip(gd: Gumps.GumpData&@, text: String) -> Void
+
+AllGumpIDs() -> List[UInt32]
+
+CloseGump(gumpid: UInt32) -> Void
+Close a specific Gump.
+CreateGump(movable: Boolean = True, closable: Boolean = True, disposable: Boolean = True, resizeable: Boolean = True) -> Gumps.GumpData
+Creates an initialized GumpData structure
+CurrentGump() -> UInt32
+Return the ID of most recent, still open Gump.
+Returns: ID of gump.
+GetGumpData(gumpid: UInt32) -> Gumps.GumpData
+
+GetGumpRawLayout(gumpid: UInt32) -> String
+Get the Raw layout (definition) of a specific gumpid
+Returns: layout (definition) of the gump.
+GetGumpText(gumpid: UInt32) -> List[String]
+Get the Text of a specific Gump.
+It is the cliloc translation of the #s in the gump
+Returns: List of Text in the gump
+GetLine(gumpId: UInt32, line_num: Int32) -> String
+Get a specific DATA line from the gumpId if it exists. Filter by line number.
+The textual strings are not considered
+Returns: Text content of the line. (empty: line not found)
+GetLineList(gumpId: UInt32, dataOnly: Boolean = False) -> List[String]
+Get all text from the specified Gump if still open
+Returns: Text of the gump.
+GetTextByID(gd: Gumps.GumpData, id: Int32) -> String
+
+HasGump(gumpId: UInt32) -> Boolean
+
+HasGump() -> Boolean
+Get status if have a gump open or not.
+Returns: True: There is a Gump open - False: otherwise.
+IsValid(gumpId: Int32) -> Boolean
+Validates if the gumpid provided exists in the gump file
+LastGumpGetLine(line_num: Int32) -> String
+Get a specific line from the most recent and still open Gump. Filter by line number.
+The text constants on the gump ARE included in indexing
+Returns: Text content of the line. (empty: line not found)
+LastGumpGetLineList() -> List[String]
+Get all text from the most recent and still open Gump.
+Returns: Text of the gump.
+LastGumpRawLayout() -> String
+Get the raw layout (definition) of the most recent and still open Gump.
+Returns: layout (definition) of the gump.
+LastGumpTextExist(text: String) -> Boolean
+Search for text inside the most recent and still open Gump.
+Returns: True: Text found in active Gump - False: otherwise
+LastGumpTextExistByLine(line_num: Int32, text: String) -> Boolean
+Search for text, in a spacific line of the most recent and still open Gump.
+LastGumpTile() -> List[Int32]
+Get the list of Gump Tile (! this documentation is a stub !)
+Returns: List of Gump Tile.
+ResetGump() -> Void
+Clean current status of Gumps.
+SendAction(gumpid: UInt32, buttonid: Int32) -> Void
+Send a Gump response by gumpid and buttonid.
+SendAdvancedAction(gumpid: UInt32, buttonid: Int32, inSwitches: List[Int32], textlist_id: List[Int32], textlist_str: List[String]) -> Void
+
+SendAdvancedAction(gumpid: UInt32, buttonid: Int32, switchlist_id: PythonList, textlist_id: PythonList, textlist_str: PythonList) -> Void
+Send a Gump response, with gumpid and buttonid and advanced switch in gumps. 
+This function is intended for more complex Gumps, with not only Buttons, but also Switches, CheckBoxes and Text fileds.
+SendAdvancedAction(gumpid: UInt32, buttonid: Int32, textlist_id: List[Int32], textlist_str: List[String]) -> Void
+
+SendAdvancedAction(gumpid: UInt32, buttonid: Int32, textlist_id: PythonList, textlist_str: PythonList) -> Void
+This method can also be used only Text fileds, without Switches.
+SendAdvancedAction(gumpid: UInt32, buttonid: Int32, inSwitches: List[Int32]) -> Void
+
+SendAdvancedAction(gumpid: UInt32, buttonid: Int32, switchs: PythonList) -> Void
+This method can also be used only Switches, without Text fileds.
+SendGump(gumpid: UInt32, serial: UInt32, x: UInt32, y: UInt32, gumpDefinition: String, gumpStrings: List[String]) -> Void
+
+SendGump(gd: Gumps.GumpData, x: UInt32, y: UInt32) -> Void
+Sends a gump using an existing GumpData structure
+WaitForGump(gumpid: UInt32, delay: Int32) -> Boolean
+Waits for a specific Gump to appear, for a maximum amount of time. If gumpid is 0 it will match any Gump.
+Returns: True: wait found the gump - False: otherwise.
+
+
+Gumps.GumpData
+--------------
+
+Properties:
+-----------
+buttonid: Int32
+gumpData: List[String]
+gumpDefinition: String
+gumpId: UInt32
+gumpLayout: String
+gumpStrings: List[String]
+gumpText: List[String]
+hasResponse: Boolean
+layoutPieces: List[String]
+serial: UInt32
+stringList: List[String]
+switches: List[Int32]
+text: List[String]
+textID: List[Int32]
+x: UInt32
+y: UInt32
+
+
+HotKeyEvent
+-----------
+@nodoc
+
+
+Item
+----
+The Item class represent a single in-game Item object. Examples of Item are: Swords, bags, bandages, reagents, clothing.
+While the Item.Serial is unique for each Item, Item.ItemID is the unique for the Item apparence, or image. Sometimes is also called ID or Graphics ID.
+Item can also be house foriture as well as decorative items on the ground, like lamp post and banches.
+However, for Item on the ground that cannot be picked up, they might be part of the world map, see Statics class.
+
+Properties:
+-----------
+Amount: Int32
+Read amount from item type object.
+Color: UInt16
+Container: Int32
+Serial of the container which contains the object.
+ContainerOpened: Boolean
+True when the container was opened
+Contains: List[Item]
+Contains the list of Item inside a container.
+CorpseNumberItems: Int32
+-1 until corpse is checked, then # items in corpse. Used by looter to ignore empty corpses
+Deleted: Boolean
+Direction: String
+Item direction.
+Durability: Int32
+Get the current durability of an Item. (0: no durability)
+Graphics: UInt16
+GridNum: Byte
+Returns the GridNum of the item. (need better documentation)
+Hue: UInt16
+Image: Bitmap
+Get the in-game image on an Item as Bitmap object.
+See MSDN: https://docs.microsoft.com/dotnet/api/system.drawing.bitmap
+IsBagOfSending: Boolean
+True: if the item is a bag of sending - False: otherwise.
+IsContainer: Boolean
+True: if the item is a container - False: otherwise.
+IsCorpse: Boolean
+True: if the item is a corpse - False: otherwise.
+IsDoor: Boolean
+True: if the item is a door - False: otherwise.
+IsInBank: Boolean
+True: if the item is in the Player's bank - False: otherwise.
+IsLootable: Boolean
+True: For regualar items - False: for hair, beards, etc.
+IsPotion: Boolean
+True: if the item is a potion - False: otherwise.
+IsResource: Boolean
+True: if the item is a resource (ore, sand, wood, stone, fish) - False: otherwise
+IsSearchable: Boolean
+True: if the item is a pouch - False: otherwise.
+IsTwoHanded: Boolean
+True: if the item is a 2-handed weapon - False: otherwise.
+IsVirtueShield: Boolean
+True: if the item is a virtue shield - False: otherwise.
+ItemID: Int32
+Represents the type of Item, usually unique for the Item image.  Sometime called ID or Graphics ID.
+Layer: String
+Gets the Layer, for werable items only. (need better documentation)
+Light: Byte
+Item light's direction (e.g. will affect corpse's facing direction)
+MaxDurability: Int32
+Get the maximum durability of an Item. (0: no durability)
+Movable: Boolean
+Item is movable
+Name: String
+Item name
+OnGround: Boolean
+True: if the item is on the ground - False: otherwise.
+Position: Point3D
+Properties: List[Property]
+Get the list of Properties of an Item.
+PropsUpdated: Boolean
+True: if Properties are updated - False: otherwise.
+RootContainer: Int32
+Get serial of root container of item.
+Serial: Int32
+Updated: Boolean
+Check if the Item already have been updated with all the properties. (need better documentation)
+Visible: Boolean
+Item is Visible
+Weight: Int32
+Get the weight of a item. (0: no weight)
+
+Methods:
+--------
+DistanceTo(mob: Mobile) -> Int32
+Return the distance in number of tiles, from Item to Mobile.
+Returns: Distance in number of tiles.
+DistanceTo(itm: Item) -> Int32
+
+Equals(obj: Object) -> Boolean
+
+Equals(entity: UOEntity) -> Boolean
+
+GetHashCode() -> Int32
+
+GetWorldPosition() -> Point3D
+
+IsChildOf(container: Item, maxDepth: Int32 = 100) -> Boolean
+Check if an Item is contained in a container. Can be a Item or a Mobile (wear by).
+Returns: True: if is contained - False: otherwise.
+IsChildOf(container: Mobile, maxDepth: Int32 = 100) -> Boolean
+
+ToString() -> String
+
+
+
+Items
+-----
+The Items class provides a wide range of functions to search and interact with Items.
+
+Methods:
+--------
+ApplyFilter(filter: Items.Filter) -> List[Item]
+Filter the global list of Items according to the options specified by the filter ( see: Items.Filter ).
+Returns: the list of Items respectinf the filter criteria.
+BackpackCount(itemid: Int32, color: Int32 = -1) -> Int32
+Count items in Player Backpack.
+ChangeDyeingTubColor(dyes: Item, dyeingTub: Item, color: Int32) -> Void
+Use the Dyes on a Dyeing Tub and select the color via color picker, using dedicated packets. 
+Need to specify the dyes, the dye tube and the color to use.
+Close(serial: Int32) -> Void
+Close opened container window. 
+On OSI, to close opened corpse window, you need to close the corpse's root container 
+Currently corpse's root container can be found by using item filter.
+Close(item: Item) -> Void
+
+ContainerCount(container: Item, itemid: Int32, color: Int32 = -1, recursive: Boolean = False) -> Int32
+Count items inside a container, summing also the amount in stacks.
+ContainerCount(serial: Int32, itemid: Int32, color: Int32 = -1, recursive: Boolean = False) -> Int32
+
+ContextExist(serial: Int32, name: String) -> Int32
+Check if Context Menu entry exists for an Item.
+ContextExist(i: Item, name: String) -> Int32
+
+DropFromHand(item: Item, container: Item) -> Void
+Drop into a bag an Item currently held in-hand. ( see: Items.Lift )
+DropItemGroundSelf(item: Item, amount: Int32 = 0) -> Void
+Drop an Item on the ground, at the current Player position.
+NOTE: On some server is not allowed to drop Items on tiles occupied by Mobiles and the Player.
+DropItemGroundSelf(serialitem: Int32, amount: Int32 = 0) -> Void
+This function seldom works because the servers dont allow drop where your standing
+FindAllByID(itemids: PythonList, color: Int32, container: Int32, range: Int32, considerIgnoreList: Boolean = True) -> PythonList
+Find a List of Items matching specific list of ItemID, Color and Container. 
+Optionally can search in all subcontaners or to a maximum depth in subcontainers.
+Can use -1 on color for no chose color, can use -1 on container for search in all item in memory.
+The depth defaults to only the top but can search for # of sub containers.
+Returns: The Item matching the criteria.
+FindAllByID(itemid: Int32, color: Int32, container: Int32, range: Int32, considerIgnoreList: Boolean = True) -> PythonList
+
+FindAllByID(itemids: List[Int32], color: Int32, container: Int32, range: Int32, considerIgnoreList: Boolean = True) -> List[Item]
+
+FindByID(itemid: Int32, color: Int32, container: Int32, recursive: Boolean = False, considerIgnoreList: Boolean = True) -> Item
+Find a single Item matching specific ItemID, Color and Container. 
+Optionally can search in all subcontaners or to a maximum depth in subcontainers.
+Can use -1 on color for no chose color, can use -1 on container for search in all item in memory. The depth defaults to only the top but can search for # of sub containers.
+Returns: The Item matching the criteria.
+FindByID(itemid: Int32, color: Int32, container: Int32, range: Int32, considerIgnoreList: Boolean = True) -> Item
+
+FindByID(itemids: List[Int32], color: Int32 = -1, container: Int32 = -1, range: Int32 = 10, considerIgnoreList: Boolean = True) -> Item
+
+FindByName(itemName: String, color: Int32, container: Int32, range: Int32, considerIgnoreList: Boolean = True) -> Item
+Find a single Item matching specific Name, Color and Container. 
+Optionally can search in all subcontaners or to a maximum depth in subcontainers.
+Can use -1 on color for no chose color, can use -1 on container for search in all item in memory. The depth defaults to only the top but can search for # of sub containers.
+Returns: The Item matching the criteria.
+FindBySerial(serial: Int32) -> Item
+Search for a specific Item by using it Serial
+Returns: Item object if found, or null if not found.
+GetImage(itemID: Int32, hue: Int32 = 0) -> Bitmap
+Get the Image on an Item by specifing the ItemID. Optinally is possible to apply a color.
+GetPropStringByIndex(serial: Int32, index: Int32) -> String
+Get a Property line, by index. if not found returns and empty string.
+Returns: A property line as a string.
+GetPropStringByIndex(item: Item, index: Int32) -> String
+
+GetPropStringList(serial: Int32) -> List[String]
+Get string list of all Properties of an item, if item no props list is empty.
+Returns: List of strings.
+GetPropStringList(item: Item) -> List[String]
+
+GetPropValue(serial: Int32, name: String) -> Single
+Read the value of a Property.
+GetPropValue(item: Item, name: String) -> Single
+
+GetPropValueString(serial: Int32, name: String) -> String
+Get a Property line, by name. if not found returns and empty string.
+Returns: A property value as a string.
+GetProperties(itemserial: Int32, delay: Int32) -> List[Property]
+Request to get immediatly the Properties of an Item, and wait for a specified amount of time.
+This only returns properties and does not attempt to update the object.
+Used in this way, properties for object not yet seen can be retrieved
+GetWeaponAbility(itemId: Int32) -> ValueTuple[String, String]
+NOTE: This is from an internal razor table and can be changed based on your server!
+Returns a pair of string values (Primary Ability, Secondary Ability) 
+for the supplied item ID. 
+"Invalid", "Invalid" for items not in the internal table
+Hide(serial: Int32) -> Void
+Hied an Item, affects only the player.
+Hide(item: Item) -> Void
+
+IgnoreTypes(itemIdList: PythonList) -> Void
+Used to ignore specific types. Be careful as you wont see things you ignore, 
+and could result in a mobile being able to kill you without you seeing it
+Lift(item: Item, amount: Int32) -> Void
+Lift an Item and hold it in-hand. ( see: Items.DropFromHand )
+Message(item: Item, hue: Int32, message: String) -> Void
+Display an in-game message on top of an Item, visibile only for the Player.
+Message(serial: Int32, hue: Int32, message: String) -> Void
+
+Move(source: Int32, destination: Int32, amount: Int32, x: Int32, y: Int32) -> Void
+Move an Item to a destination, which can be an Item or a Mobile.
+Move(source: Item, destination: Mobile, amount: Int32, x: Int32, y: Int32) -> Void
+
+Move(source: Int32, destination: Mobile, amount: Int32, x: Int32, y: Int32) -> Void
+
+Move(source: Item, destination: Int32, amount: Int32, x: Int32, y: Int32) -> Void
+
+Move(source: Int32, destination: Item, amount: Int32, x: Int32, y: Int32) -> Void
+
+Move(source: Item, destination: Item, amount: Int32, x: Int32, y: Int32) -> Void
+
+Move(source: Item, destination: Mobile, amount: Int32) -> Void
+
+Move(source: Int32, destination: Mobile, amount: Int32) -> Void
+
+Move(source: Item, destination: Int32, amount: Int32) -> Void
+
+Move(source: Int32, destination: Item, amount: Int32) -> Void
+
+Move(source: Item, destination: Item, amount: Int32) -> Void
+
+Move(source: Int32, destination: Int32, amount: Int32) -> Void
+
+MoveOnGround(source: Int32, amount: Int32, x: Int32, y: Int32, z: Int32) -> Void
+Move an Item on the ground to a specific location.
+MoveOnGround(source: Item, amount: Int32, x: Int32, y: Int32, z: Int32) -> Void
+
+OpenAt(serial: Int32, x: Int32, y: Int32) -> Void
+
+OpenAt(item: Item, x: Int32, y: Int32) -> Void
+
+OpenContainerAt(bag: Item, x: Int32, y: Int32) -> Void
+Open a container at a specific location on the screen
+Select(items: List[Item], selector: String) -> Item
+
+SetColor(serial: Int32, color: Int32 = -1) -> Void
+Change/override the Color of an Item, the change affects only Player client. The change is not persistent.
+If the color is -1 or unspecified, the color of the item is restored.
+SingleClick(item: Item) -> Void
+Send a single click network event to the server.
+SingleClick(itemserial: Int32) -> Void
+
+UseItem(itemSerial: Int32, targetSerial: Int32, wait: Boolean) -> Void
+Use an Item, optionally is possible to specify a Item or Mobile target.
+NOTE: The optional target may not work on some free shards. Use Target.Execute instead.
+UseItem(item: Item, target: UOEntity) -> Void
+
+UseItem(item: Int32, target: UOEntity) -> Void
+
+UseItem(item: Item, target: Int32) -> Void
+
+UseItem(itemSerial: Int32, targetSerial: Int32) -> Void
+
+UseItem(itemserial: Int32) -> Void
+
+UseItem(item: Item) -> Void
+
+UseItemByID(itemid: Int32, color: Int32 = -1) -> Boolean
+Use any item of a specific type, matching Item.ItemID. Optionally also of a specific color, matching Item.Hue.
+WaitForContents(bag: Item, delay: Int32) -> Boolean
+Open a container an wait for the Items to load, for a maximum amount of time.
+WaitForContents(bag_serial: Int32, delay: Int32) -> Boolean
+
+WaitForProps(itemserial: Int32, delay: Int32) -> Void
+If not updated, request to the Properties of an Item, and wait for a maximum amount of time.
+WaitForProps(i: Item, delay: Int32) -> Void
+
+
+
+Items.Filter
+------------
+The Items.Filter class is used to store options to filter the global Item list.
+Often used in combination with Items.ApplyFilter.
+
+Properties:
+-----------
+CheckIgnoreObject: Boolean
+Exclude from the search Items which are currently on the global Ignore List. ( default: False, any Item )
+Enabled: Boolean
+True: The filter is used - False: Return all Item. ( default: True, active )
+Graphics: List[Int32]
+Limit the search to a list of Grapichs ID (see: Item.ItemID ) 
+Supports .Add() and .AddRange()
+Hues: List[Int32]
+Limit the search to a list of Colors.
+Supports .Add() and .AddRange()
+IsContainer: Int32
+Limit the search to the Items which are also containers. (default: -1: any Item)
+IsCorpse: Int32
+Limit the search to the corpses on the ground. (default: -1, any Item)
+IsDoor: Int32
+Limit the search to the doors. (default: -1: any Item)
+Layers: List[String]
+Limit the search to the wearable Items by Layer.
+Supports .Add() and .AddRange()
+
+Layers:
+    RightHand
+    LeftHand
+    Shoes
+    Pants
+    Shirt
+    Head
+    Gloves
+    Ring
+    Neck
+    Waist
+    InnerTorso
+    Bracelet
+    MiddleTorso
+    Earrings
+    Arms
+    Cloak
+    OuterTorso
+    OuterLegs
+    InnerLegs
+    Talisman
+Movable: Int32
+Limit the search to only Movable Items. ( default: -1, any Item )
+Multi: Int32
+Limit the search to only Multi Items. ( default: -1, any Item )
+Name: String
+Limit the search by name of the Item.
+OnGround: Int32
+Limit the search to the Items on the ground. (default: -1, any Item)
+RangeMax: Double
+Limit the search by distance, to Items which are at most RangeMax tiles away from the Player. ( default: -1, any Item )
+RangeMin: Double
+Limit the search by distance, to Items which are at least RangeMin tiles away from the Player. ( default: -1, any Item )
+Serials: List[Int32]
+Limit the search to a list of Serials of Item to find. (ex: 0x0406EFCA )
+Supports .Add() and .AddRange()
+ZRangeMax: Double
+Limit the search by height, to Items which are at most ZRangeMax coordinates away from the Player. ( default: -1, any Item )
+ZRangeMin: Double
+Limit the search by height, to Items which are at least ZRangeMin coordinates away from the Player. ( default: -1, any Item )
+
+
+Journal
+-------
+The Journal class provides access to the message Journal.
+
+Methods:
+--------
+Clear(toBeRemoved: String) -> Void
+Removes all matching entry from the Jorunal.
+Clear() -> Void
+Removes all entry from the Jorunal.
+FilterText(text: String) -> Void
+Store a string that if matched, will block journal message ( case insensitive )
+Returns: void
+GetJournalEntry(afterTimestap: Double = -1) -> List[Journal.JournalEntry]
+Get a copy of all Journal lines as JournalEntry. The list can be filtered to include *only* most recent events.
+Returns: List of JournalEntry
+GetJournalEntry(afterJournalEntry: Journal.JournalEntry = None) -> List[Journal.JournalEntry]
+Get a copy of all Journal lines as JournalEntry. The list can be filtered to include *only* most recent events.
+Returns: List of JournalEntry
+GetLineText(text: String, addname: Boolean = False) -> String
+Search and return the most recent line Journal containing the given text. (case sensitive)
+Returns: Return the full line - Empty string if not found.
+GetSpeechName() -> List[String]
+Get list of speakers.
+Returns: List of speakers as text.
+GetTextByColor(color: Int32, addname: Boolean = False) -> List[String]
+Returns all the lines present in the Journal for a given color.
+Returns: A list of Journal as lines of text.
+GetTextByName(name: String, addname: Boolean = False) -> List[String]
+Returns all the lines present in the Journal for a given source name. (case sensitive)
+Returns: A list of Journal as lines of text.
+GetTextBySerial(serial: Int32, addname: Boolean = False) -> List[String]
+Returns all the lines present in the Journal for a given serial.
+Returns: A list of Journal as lines of text.
+GetTextByType(type: String, addname: Boolean = False) -> List[String]
+Returns all the lines present in the Journal for a given type. (case sensitive)
+Returns: A list of Journal as lines of text.
+RemoveFilterText(text: String) -> Void
+Remove a stored a string that if matched, would block journal message ( case insensitive )
+Returns: void
+Search(text: String) -> Boolean
+Search in the Journal for the occurrence of text. (case sensitive)
+Returns: True: Text is found - False: otherwise
+SearchByColor(text: String, color: Int32) -> Boolean
+Search in the Journal for the occurrence of text, for a given color. (case sensitive)
+Returns: True: Text is found - False: otherwise
+SearchByName(text: String, name: String) -> Boolean
+Search in the Journal for the occurrence of text, for a given source. (case sensitive)
+Returns: True: Text is found - False: otherwise
+SearchByType(text: String, type: String) -> Boolean
+Search in the Journal for the occurrence of text, for a given type. (case sensitive)
+Returns: True: Text is found - False: otherwise
+WaitByName(name: String, delay: Int32) -> Boolean
+Pause script and wait for maximum amount of time, for a specific source to appear in Jorunal. (case sensitive)
+WaitJournal(text: String, delay: Int32) -> Boolean
+Pause script and wait for maximum amount of time, for a specific text to appear in Journal. (case sensitive)
+Returns: True: Text is found - False: otherwise
+WaitJournal(msgs: List[String], delay: Int32) -> String
+
+
+
+Journal.JournalEntry
+--------------------
+The JournalEntry class rapresents a line in the Journal.
+
+Properties:
+-----------
+Color: Int32
+Color of the text.
+Name: String
+Name of the source, can be a Mobile or an Item.
+Serial: Int32
+Name of the source, can be a Mobile or an Item.
+Text: String
+Actual content of the Journal Line.
+Timestamp: Double
+Timestamp as UnixTime, the number of seconds elapsed since 01-Jan-1970.
+Type: String
+Regular
+System
+Emote
+Label
+Focus
+Whisper
+Yell
+Spell
+Guild
+Alliance
+Party
+Encoded
+Special
+
+Methods:
+--------
+Copy() -> Journal.JournalEntry
+
+
+
+Misc
+----
+The Misc class contains general purpose functions of common use.
+
+Methods:
+--------
+AllSharedValue() -> List[String]
+
+AppendNotDupToFile(fileName: String, lineOfData: String) -> Boolean
+Allows creation and append of a file within RE ValidLocations.
+For OSI/RE this is only the RE directory / sub-directories
+For CUO/RE this is only CUO or RE directory / sub-directories
+The filename MUST end in a limited file suffix list
+Checks to see if an identical line is already in the file, and does not add if it exists
+AppendToFile(fileName: String, lineOfData: String) -> Boolean
+Allows creation and append of a file within RE ValidLocations.
+For OSI/RE this is only the RE directory / sub-directories
+For CUO/RE this is only CUO or RE directory / sub-directories
+The filename MUST end in a limited file suffix list
+Beep() -> Void
+Play Beep system sound.
+CancelPrompt() -> Void
+Cancel a prompt request.
+CaptureNow() -> String
+Creates a snapshot of the current UO window.
+Returns: The path to the saved file.
+ChangeProfile(profileName: String) -> Void
+Allow the scripted loading of a profile
+CheckIgnoreObject(serial: Int32) -> Boolean
+Check object from ignore list, return true if present. Can check Serial, Items or Mobiles
+Returns: True: Object is ignored - False: otherwise.
+CheckIgnoreObject(entity: UOEntity) -> Boolean
+
+CheckSharedValue(name: String) -> Boolean
+Check if a shared value exixts.
+Returns: True: Shared value exists - False: otherwise.
+ClearDragQueue() -> Void
+Clear the Drag-n-Drop queue.
+ClearIgnore() -> Void
+Clear ignore list from all object
+CloseBackpack() -> Void
+Close the backpack. 
+(OSI client only, no ClassicUO)
+CloseMenu() -> Void
+Close opened Old Menu.
+ConfigDirectory() -> String
+Get the full path to the Config Directory.
+Returns: Full path to the Scripts Directory.
+ContextReply(serial: Int32, respone_num: Int32) -> Void
+Respond to a context menu on mobile or item. Menu ID is base zero, or can use string of menu text.
+ContextReply(serial: Int32, menu_name: String) -> Void
+
+ContextReply(entity: UOEntity, menu_num: Int32) -> Void
+
+ContextReply(entity: UOEntity, menu_name: String) -> Void
+
+DataDirectory() -> String
+Get the full path to the Config Directory.
+Returns: Full path to the Config Directory.
+DeleteFile(fileName: String) -> Boolean
+Allows deletion of a file within RE ValidLocations.
+For OSI/RE this is only the RE directory / sub-directories
+For CUO/RE this is only CUO or RE directory / sub-directories
+The filename MUST end in a limited file suffix list
+Disconnect() -> Void
+Force client to disconnect.
+Distance(X1: Int32, Y1: Int32, X2: Int32, Y2: Int32) -> Int32
+Returns the UO distance between the 2 sets of co-ordinates.
+DistanceSqrt(point_a: Point3D, point_b: Point3D) -> Double
+Compute the distance between 2 Point3D using pythagorian.
+ExportPythonAPI(path: String = None, pretty: Boolean = True) -> Void
+Return a string containing list RE Python API list in JSON format.
+FilterSeason(enable: Boolean, seasonFlag: UInt32) -> Void
+Enable or disable the Seasons filter forcing a specific season
+Season filter state will be saved on logout but not the season flag that will be recovered.
+FocusUOWindow() -> Void
+Set UoClient window in focus or restore if minimized.
+GetContPosition() -> Point
+Get the position of the currently active Gump/Container.
+(OSI client only, no ClassicUO)
+Returns: Return X,Y coordinates as a Point2D
+GetMapInfo(serial: UInt32) -> Misc.MapInfo
+Get MapInfo about a Mobile or Item using the serial
+Returns: A MapInfo object.
+GetMenuTitle() -> String
+Get the title of title for open Old Menu.
+Returns: Text of the title.
+GetWindowSize() -> Rectangle
+Get a Rectangle representing the window size.
+See also: https://docs.microsoft.com/dotnet/api/system.drawing.rectangle
+Returns: Rectangle object. Properties: X, Y, Width, Height.
+HasMenu() -> Boolean
+Check if an Old Menu is open.
+Returns: True: is open - False: otherwise
+HasPrompt() -> Boolean
+Check if have a prompt request.
+Returns: True: there is a prompt - False: otherwise
+HasQueryString() -> Boolean
+Check if a have a query string menu opened, return true or false.
+Returns: True: Has quesy - False: otherwise.
+IgnoreObject(serial: Int32) -> Void
+Add an entiry to the ignore list. Can ignore Serial, Items or Mobiles.
+IgnoreObject(entity: UOEntity) -> Void
+
+Inspect() -> Void
+Prompt the user with a Target. Open the inspector for the selected target.
+IsItem(serial: UInt32) -> Boolean
+Determine if the serial is an item
+Returns: Return True - is an Item False - is not an item
+IsMobile(serial: UInt32) -> Boolean
+Determine if the serial is a mobile
+Returns: Return True - is a mobile False - is not a mobile
+LastHotKey() -> HotKeyEvent
+Returns the latest HotKey recorded by razor as HotKeyEvent object.
+LeftMouseClick(xpos: Int32, ypos: Int32, clientCoords: Boolean = True) -> Void
+Perform a phisical left click on the window using Windows API.
+Is possible to use abolute Screen Coordinates by setting clientCoords=False.
+MenuContain(text: String) -> Boolean
+Search in open Old Menu if contains a specific text.
+Returns: True: Text found - False: otherwise.
+MenuResponse(text: String) -> Void
+Perform a menu response by subitem name. If item not exist close menu.
+MouseLocation() -> Point
+Returns a point with the X and Y coordinates of the mouse relative to the UO Window
+Returns: Return X,Y coords as Point object.
+MouseMove(posX: Int32, posY: Int32) -> Void
+Moves the mouse pointer to the position X,Y relative to the UO window
+NextContPosition(x: Int32, y: Int32) -> Void
+Return the X,Y of the next container, relative to the game window.
+(OSI client only, no ClassicUO)
+NoOperation() -> Void
+Just do nothing and enjot the present moment.
+NoRunStealthStatus() -> Boolean
+Get the status of "No Run When Stealth" via scripting.
+Returns: True: Open is active - False: otherwise.
+NoRunStealthToggle(enable: Boolean) -> Void
+Set "No Run When Stealth" via scripting. Changes via scripting are not persistents.
+OpenPaperdoll() -> Void
+Open the backpack. 
+(OSI client only, no ClassicUO)
+Pause(millisec: Int32) -> Void
+Pause the script for a given amount of time.
+PetRename(serial: Int32, name: String) -> Void
+Rename a specific pet.
+PetRename(mob: Mobile, name: String) -> Void
+
+PlaySound(sound: Int32, x: Int32, y: Int32, z: Int32) -> Void
+Send a sound to the client.
+QueryStringResponse(okcancel: Boolean, response: String) -> Void
+Perform a query string response by ok or cancel button and specific response string.
+RazorDirectory() -> String
+Get the full path to the main Razor Enhanced folder.
+This path maybe be different from the Python starting folder when RE is loaded as plugin (ex: ClassicUO)
+Returns: Path as text
+ReadSharedValue(name: String) -> Object
+Get a Shared Value, if value not exist return null.
+Shared values are accessible by every script.
+Returns: The stored object.
+RemoveLineInFile(fileName: String, lineOfData: String) -> Boolean
+Allows removal of a line in a file within RE ValidLocations.
+For OSI/RE this is only the RE directory / sub-directories
+For CUO/RE this is only CUO or RE directory / sub-directories
+The filename MUST end in a limited file suffix list
+Checks to see if an identical line is in the file, and if it exists, it is removed and file written
+RemoveSharedValue(name: String) -> Void
+Remove a Shared Value.
+ResetPrompt() -> Void
+Reset a prompt response.
+ResponsePrompt(text: String) -> Void
+Response a prompt request. Often used to rename runes and similar.
+Resync() -> Void
+Trigger a client ReSync.
+RightMouseClick(xpos: Int32, ypos: Int32, clientCoords: Boolean = True) -> Void
+Perform a phisical Right click on the window.
+ScriptCurrent(fullpath: Boolean = True) -> String
+Returns the path of the current script.
+ScriptDirectory() -> String
+Get the full path to the Scripts Directory.
+Returns: Full path to the Scripts Directory.
+ScriptIsSuspended(scriptfile: String) -> Boolean
+Get status of script if is suspended or not, Script must be present in script grid.
+Returns: True: Script is suspended - False: otherwise.
+ScriptResume(scriptfile: String) -> Void
+Resume a script by file name, Script must be present in script grid.
+ScriptRun(scriptfile: String) -> Void
+Run a script by file name, Script must be present in script grid.
+ScriptStatus(scriptfile: String) -> Boolean
+Get status of script if running or not, Script must be present in script grid.
+Returns: True: Script is running - False: otherwise.
+ScriptStop(scriptfile: String) -> Void
+Stop a script by file name, Script must be present in script grid.
+ScriptStopAll(skipCurrent: Boolean = False) -> Void
+Stop all script running.
+ScriptSuspend(scriptfile: String) -> Void
+Suspend a script by file name, Script must be present in script grid.
+SendMessage(msg: String, color: Int32, wait: Boolean) -> Void
+Send a message to the client.
+SendMessage(obj: Object, color: Int32) -> Void
+
+SendMessage(num: Int32, color: Int32) -> Void
+
+SendMessage(num: UInt32, color: Int32) -> Void
+
+SendMessage(msg: Boolean, color: Int32) -> Void
+
+SendMessage(msg: Double, color: Int32) -> Void
+
+SendMessage(msg: String, wait: Boolean = True) -> Void
+
+SendMessage(num: Int32) -> Void
+
+SendMessage(obj: Object) -> Void
+
+SendMessage(num: UInt32) -> Void
+
+SendMessage(msg: Boolean) -> Void
+
+SendMessage(msg: Double) -> Void
+
+SendMessage(num: Single) -> Void
+
+SendToClient(keys: String) -> Void
+Send to the client a list of keystrokes. Can contain control characters: 
+- Send Control+Key: ctrl+u: ^u
+- Send ENTER: {Enter}
+Note: some keys don't work with ClassicUO (es: {Enter} )
+SetSharedValue(name: String, value: Object) -> Void
+Set a Shared Value by specific name, if value exist he repalce value.
+Shared values are accessible by every script.
+ShardName() -> String
+Get the name of the shard.
+Returns: Name of the shard
+UnIgnoreObject(serial: Int32) -> Void
+Remove object from ignore list. Can remove serial, items or mobiles
+UnIgnoreObject(entity: UOEntity) -> Void
+
+UseContextMenu(serial: Int32, choice: String, delay: Int32) -> Boolean
+Open and click the option of Context menu, given the serial of Mobile or Item, via packets.
+Returns: True: Optiona selected succesfully - False: otherwise.
+WaitForContext(serial: Int32, delay: Int32, showContext: Boolean = False) -> List[Misc.Context]
+Return the List entry of a Context menu, of Mobile or Item objects.
+The function will ask the server for the List and wait for a maximum amount of time.
+Returns: A List of Context objects.
+WaitForContext(mob: Mobile, delay: Int32, showContext: Boolean = False) -> List[Misc.Context]
+
+WaitForContext(itm: Item, delay: Int32, showContext: Boolean = False) -> List[Misc.Context]
+
+WaitForMenu(delay: Int32) -> Boolean
+Pause script until server send an Old Menu, for a maximum amount of time.
+Returns: True: if the Old Menu is open - False: otherwise.
+WaitForPrompt(delay: Int32) -> Boolean
+Wait for a prompt for a maximum amount of time.
+Returns: True: Prompt is present - False: otherwise
+WaitForQueryString(delay: Int32) -> Boolean
+Pause script until server send query string request, for a maximum amount of time.
+Returns: True: if player has a query - False: otherwise.
+
+
+Misc.Context
+------------
+The Context class holds information about a single entry in the Context Menu.
+
+Properties:
+-----------
+Entry: String
+Response: Int32
+
+
+Misc.MapInfo
+------------
+The MapInfo class is used to store information about the Map location.
+
+Properties:
+-----------
+Facet: UInt16
+MapEnd: Point2D
+MapOrigin: Point2D
+PinPosition: Point2D
+Serial: UInt32
+
+
+Mobile
+------
+The Mobile class represents an single alive entity. 
+While the Mobile.Serial is unique for each Mobile, Mobile.MobileID is the unique for the Mobile apparence, or image. Sometimes is also called Body or Body ID.
+Mobiles which dies and leave a corpse behind, they stop existing as Mobiles and instead leave a corpse as a Item object appears.
+
+Properties:
+-----------
+Backpack: Item
+Get the Item representing the backpack of a Mobile. Return null if it doesn't have one.
+CanRename: Boolean
+Determine if a mobile can be renamed. (Ex: pets, summons, etc )
+Color: UInt16
+Color of the mobile.
+Contains: List[Item]
+Returns the list of items present in the Paperdoll (or equivalent) of the Mobile.
+Might not match the items found using via Layer.
+Deleted: Boolean
+Direction: String
+Returns the direction of the Mobile.
+Fame: Int32
+Fame has to be reverse engineered from the title so it is just ranges:
+0: neutaral - 3 is highest fame
+Female: Boolean
+The Mobile is a female.
+Flying: Boolean
+The mobile is Flying ( Gragoyle )
+Graphics: UInt16
+Hits: Int32
+The current hit point of a Mobile. To be read as propotion over Mobile.HitsMax.
+HitsMax: Int32
+Maximum hitpoint of a Mobile.
+Hue: UInt16
+InParty: Boolean
+True: if the Mobile is in your party. - False: otherwise.
+IsGhost: Boolean
+If is a Ghost
+Match any MobileID  in the list:
+    402, 403, 607, 608, 694, 695, 970
+IsHuman: Boolean
+Check is the Mobile has a human body.
+Match any MobileID in the list:
+    183, 184, 185, 186, 400, 
+    401, 402, 403, 605, 606,
+    607, 608, 666, 667, 694, 
+    744, 745, 747, 748, 750,  
+    751, 970, 695
+ItemID: Int32
+Karma: Int32
+Karma has to be reverse engineered from the title so it is just ranges:
+-5: most evil, 0: neutaral, 5 most good
+KarmaTitle: String
+This is the title string returned from the server
+Mana: Int32
+The current mana of a Mobile. To be read as propotion over Mobile.ManaMax.
+ManaMax: Int32
+Maximum mana of a Mobile.
+Map: Int32
+Current map or facet.
+MobileID: Int32
+Represents the type of Mobile, usually unique for the Mobile image. ( Alias: Mobile.Body )
+Mount: Item
+Returns the Item assigned to the "Mount" Layer.
+Name: String
+Name of the Mobile.
+Notoriety: Int32
+Get the notoriety of the Mobile.
+
+Notorieties:
+    1: blue, innocent
+    2: green, friend
+    3: gray, neutral
+    4: gray, criminal
+    5: orange, enemy
+    6: red, hostile 
+    6: yellow, invulnerable
+Paralized: Boolean
+The mobile is Paralized.
+Poisoned: Boolean
+The mobile is Poisoned.
+Position: Point3D
+Properties: List[Property]
+Get all properties of a Mobile as list of lines of the tooltip.
+PropsUpdated: Boolean
+True: Mobile.Propertires are updated - False: otherwise.
+Quiver: Item
+Get the Item representing the quiver of a Mobile. Return null if it doesn't have one.
+Serial: Int32
+Stam: Int32
+The current stamina of a Mobile. To be read as propotion over Mobile.StamMax.
+StamMax: Int32
+Maximum stamina of a Mobile.
+Visible: Boolean
+True: The Mobile is visible - Flase: The mobile is hidden.
+WarMode: Boolean
+Mobile is in War mode.
+YellowHits: Boolean
+The mobile healthbar is not blue, but yellow.
+
+Methods:
+--------
+DistanceTo(other_mobile: Mobile) -> Int32
+Returns the UO distance between the current Mobile and another one.
+Equals(obj: Object) -> Boolean
+
+Equals(entity: UOEntity) -> Boolean
+
+GetHashCode() -> Int32
+
+GetItemOnLayer(layer: String) -> Item
+Returns the Item associated with a Mobile Layer.
+Returns: Item for the layer. Return null if not found or Layer invalid.
+UpdateKarma() -> Boolean
+Costly! 
+Updates the Fame and Karma of the Mobile, but it can take as long as 1 second to complete.
+Returns: True if successful, False if not server packet received
+
+
+Mobiles
+-------
+The Mobiles class provides a wide range of functions to search and interact with Mobile.
+
+Methods:
+--------
+ApplyFilter(filter: Mobiles.Filter) -> List[Mobile]
+
+ContextExist(mob: Mobile, name: String, showContext: Boolean = False) -> Int32
+
+ContextExist(serial: Int32, name: String, showContext: Boolean = False) -> Int32
+
+FindBySerial(serial: Int32) -> Mobile
+Find the Mobile with a specific Serial.
+FindMobile(graphic: Int32, notoriety: List[Byte], rangemax: Int32, selector: String, highlight: Boolean) -> Mobile
+
+FindMobile(graphics: List[Int32], notoriety: List[Byte], rangemax: Int32, selector: String, highlight: Boolean) -> Mobile
+
+GetPropStringByIndex(serial: Int32, index: Int32) -> String
+
+GetPropStringByIndex(mob: Mobile, index: Int32) -> String
+
+GetPropStringList(serial: Int32) -> List[String]
+
+GetPropStringList(mob: Mobile) -> List[String]
+
+GetPropValue(serial: Int32, name: String) -> Single
+
+GetPropValue(mob: Mobile, name: String) -> Single
+
+GetTargetingFilter(target_name: String) -> Mobiles.Filter
+
+GetTrackingInfo() -> Mobiles.TrackingInfo
+Get the most updated information about tracking.
+Message(mobile: Mobile, hue: Int32, message: String, wait: Boolean = True) -> Void
+
+Message(serial: Int32, hue: Int32, message: String, wait: Boolean = True) -> Void
+
+Select(mobiles: List[Mobile], selector: String) -> Mobile
+
+SingleClick(mobile: Mobile) -> Void
+
+SingleClick(serial: Int32) -> Void
+
+UseMobile(mobile: Mobile) -> Void
+
+UseMobile(mobileserial: Int32) -> Void
+
+WaitForProps(m: Mobile, delay: Int32) -> Boolean
+
+WaitForProps(mobileserial: Int32, delay: Int32) -> Boolean
+
+WaitForStats(m: Mobile, delay: Int32) -> Boolean
+
+WaitForStats(mobileserial: Int32, delay: Int32) -> Boolean
+
+
+
+Mobiles.Filter
+--------------
+The Mobiles.Filter class is used to store options to filter the global Mobile list.
+Often used in combination with Mobiles.ApplyFilter.
+
+Properties:
+-----------
+Blessed: Int32
+Limit the search to only Blessed Mobiles.  (default: -1, any Mobile)
+Bodies: List[Int32]
+Limit the search to a list of MobileID (see: Mobile.ItemID or Mobile.Body ) 
+Supports .Add() and .AddRange()
+CheckIgnoreObject: Boolean
+Exclude from the search Mobiles which are currently on the global Ignore List. ( default: False, any Item )
+CheckLineOfSight: Boolean
+Limit the search only to the Mobiles which are in line of sight. (default: false, any Mobile)
+Enabled: Boolean
+True: The filter is used - False: Return all Mobile. ( default: True, active )
+Female: Int32
+Limit the search to female Mobile.  (default: -1, any)
+Friend: Int32
+Limit the search to friend Mobile. (default: -1, any)
+Graphics: List[Int32]
+Hues: List[Int32]
+Limit the search to a list of Colors.
+Supports .Add() and .AddRange()
+IgnorePets: Boolean
+Include the Mobiles which are currently on the Pet List. ( default: True, include Pets )
+IsGhost: Int32
+Limit the search to Ghost only. (default: -1, any Mobile )
+Match any MobileID in the list:
+    402, 403, 607, 608, 694, 695, 970
+IsHuman: Int32
+Limit the search to Humans only. (default: -1, any Mobile )
+Match any MobileID in the list:
+    183, 184, 185, 186, 400, 
+    401, 402, 403, 605, 606,
+    607, 608, 666, 667, 694, 
+    744, 745, 747, 748, 750,  
+    751, 970, 695
+Name: String
+Limit the search by name of the Mobile.
+Notorieties: List[Byte]
+Limit the search to the Mobile by notoriety.
+Supports .Add() and .AddRange()
+
+Notorieties:
+    1: blue, innocent
+    2: green, friend
+    3: gray, neutral
+    4: gray, criminal
+    5: orange, enemy
+    6: red, hostile 
+    6: yellow, invulnerable
+Paralized: Int32
+Limit the search to paralized Mobile. (default: -1, any)
+Poisoned: Int32
+Limit the search to only Poisoned Mobiles.  (default: -1, any Mobile)
+RangeMax: Double
+Limit the search by distance, to Mobiles which are at most RangeMax tiles away from the Player. ( default: -1, any Mobile )
+RangeMin: Double
+Limit the search by distance, to Mobiles which are at least RangeMin tiles away from the Player. ( default: -1, any Mobile )
+Serials: List[Int32]
+Limit the search to a list of Serials of Mobile to find. (ex: 0x0406EFCA )
+Supports .Add() and .AddRange()
+Warmode: Int32
+Limit the search to Mobile War mode. (default: -1, any Mobile)
+    -1: any
+     0: peace
+     1: war
+ZLevelMax: Double
+Limit the search by z-level, to Mobiles which are at most z-level specified. ( default: 4096, all z-levels )
+ZLevelMin: Double
+Limit the search by z-level, to Mobiles which are at least z-level specified. ( default: -4096, all z-levels )
+
+
+Mobiles.TrackingInfo
+--------------------
+The TrackingInfo class hold the latest information about.
+
+Properties:
+-----------
+lastUpdate: DateTime
+serial: UInt32
+x: UInt16
+y: UInt16
+
+
+Organizer
+---------
+The Organizer class allow you to interect with the Scavenger Agent, via scripting.
+
+Methods:
+--------
+ChangeList(listName: String) -> Void
+Change the Organizer's active list.
+FStart() -> Void
+Start the Organizer Agent on the currently active list.
+FStop() -> Void
+Stop the Organizer Agent.
+RunOnce(organizerName: String, sourceBag: Int32, destBag: Int32, dragDelay: Int32) -> Void
+
+Status() -> Boolean
+Check Organizer Agent status
+Returns: True: if the Organizer is running - False: otherwise
+
+
+PacketLogger
+------------
+RazorEnhanced packet logger.
+
+Properties:
+-----------
+PathToString: Dictionary[PacketPath, String]
+StringToPath: Dictionary[String, PacketPath]
+
+Methods:
+--------
+AddBlacklist(packetID: Int32) -> Void
+Add the packetID to the blacklist. Packets in the backlist will not be logged. (See PacketLogger.DiscardAll() )
+AddTemplate(packetTemplate: String) -> Void
+Add a custom template for RazorEnhanced packet logger.
+Example of "Damage" (0x0B) packet:
+{
+ 'packetID': 0x0B,
+ 'name': 'Damage 0x0B',
+ 'showHexDump': true,
+ 'fields':[
+   { 'name':'packetID', 'length':1, 'type':'packetID'},
+   { 'name':'Serial', 'length':4, 'type':'serial'},
+   { 'name':'Damage', 'length': 2, 'type':'int'},
+ ]
+}
+AddWhitelist(packetID: Int32) -> Void
+Add the packetID to the whitelist. Packets in the whitelist are always. (See PacketLogger.DiscardAll() )
+DiscardAll(discardAll: Boolean) -> Void
+Packet logger will discard all packets, except the one in the whitelist.  (See PacketLogger.AddWhitelist() )
+DiscardShowHeader(showHeader: Boolean) -> Void
+Packet logger will show the headers of discarded packets.
+ListenPacketPath(packetPath: String = , active: Boolean = True) -> String[][]
+Packet logger will discard all packets, except the one in the whitelist.  (See PacketLogger.AddWhitelist() ) 
+If the packetPath is not set or not resognized, the function simply returns the current active paths.
+Returns: List of strings of currently active packet paths.
+RemoveTemplate(packetID: Int32 = -1) -> Void
+Remove a PacketTemplate for RazorEnhanced packet logger.
+Reset() -> Void
+Reset the packet logger to defaults.
+SendToClient(packetData: Byte[][]) -> Void
+Send a packet to the client.
+SendToClient(packetData: List[Byte]) -> Void
+
+SendToClient(packetData: PythonList) -> Void
+
+SendToServer(packetData: Byte[][]) -> Void
+Send a packet to the server.
+SendToServer(packetData: List[Byte]) -> Void
+
+SendToServer(packetData: PythonList) -> Void
+
+SetOutputPath(outputpath: String = None) -> String
+Set the RazorEnhanced packet logger. Calling it without a path it rester it to the default path.
+Returns: The path to the saved file.
+Start(outputpath: String = None, appendLogs: Boolean = False) -> String
+Start the RazorEnhanced packet logger.
+Returns: The path to the saved file.
+Start(appendLogs: Boolean = False) -> String
+
+Stop() -> String
+Stop the RazorEnhanced packet logger.
+Returns: The path to the saved file.
+
+
+PacketLogger.FieldTemplate
+--------------------------
+Class representing the fields inside a packet template.
+Example of "Damage" (0x0B) packet:
+{
+ 'packetID': 0x0B,
+ 'name': 'Damage 0x0B',
+ 'showHexDump': true,
+ 'fields':[
+   { 'name':'packetID', 'length':1, 'type':'packetID'},
+   { 'name':'Serial', 'length':4, 'type':'serial'},
+   { 'name':'Damage', 'length': 2, 'type':'int'},
+ ]
+}
+
+Properties:
+-----------
+fields: List[PacketLogger.FieldTemplate]
+List of subfields present in this Field.
+length: Int32
+Length in bytes. length &gt; 0 maybe a mandatory for some FieldType.
+name: String
+Dysplay Name of the field.
+subpacket: PacketLogger.PacketTemplate
+A subpacket Field.
+type: String
+Type of field. See FieldType for details on each type.
+
+
+PacketLogger.FieldType
+----------------------
+Type of Fields available for FieldTemplate 
+Example of "Damage" (0x0B) packet:
+{
+ 'packetID': 0x0B,
+ 'name': 'Damage 0x0B',
+ 'showHexDump': true,
+ 'fields':[
+   { 'name':'packetID', 'length':1, 'type':'packetID'},
+   { 'name':'Serial', 'length':4, 'type':'serial'},
+   { 'name':'Damage', 'length': 2, 'type':'int'},
+ ]
+}
+
+Properties:
+-----------
+BOOL: String
+Boolean type, length is fixed to 1 byte.
+      
+Example:
+{'name':'Paralized', 'type':'bool'}
+DUMP: String
+Dump a certain amount of data as raw bytes-by-bytes HEX 
+Length is mandatory.
+      
+Example:
+{'name':'unused', 'type':'dump', 'length': 40}
+FIELDS: String
+A special field which has subfields, useful for displaying stucts. 
+'length' is ignored, 'type' is optional, 'fields' is mandatory.
+
+Example:
+{'name':'Player Position', 'type':'fields',
+  'fields':[
+         {'name':'X', 'type':'uint', 'length': 2}
+         {'name':'Y', 'type':'uint', 'length': 2}
+         {'name':'Z', 'type':'uint', 'length': 1}
+   ]
+}
+FIELDSFOR: String
+HEX: String
+Hex type is equivalent to unsigned integers but the contents is displayed as 0x hex.
+Length is mandatory and can range between 1 and 4 bytes.
+      
+Example:
+{'name':'Hue', 'type':'hex', 'length': 2}
+INT: String
+Integers type used for positive and negative integers.
+Length is mandatory and can range between 1 and 4 bytes.
+      
+Example:
+{'name':'Z Level', 'type':'int', 'length': 2}
+MODELID: String
+ModelID type like Item.ItemdID, Mobile.Body, etc.
+Length is fixed to 2 bytes and is displayed as 0x hex.
+      
+Example:
+{'name':'Item ID', 'type':'modelID'}
+{'name':'Mobile Body', 'type':'modelID'}
+{'name':'Static ID', 'type':'modelID'}
+PACKETID: String
+Common type present in every packet, packetID, length is fixed to 1 byte.
+           
+Example:
+{'name':'packetID', 'type':'packetID'}
+SERIAL: String
+Serial type, length is fixed to 4 bytes and is displayed as 0x hex.
+      
+Example:
+{'name':'Target Serial', 'type':'serial'}
+SKIP: String
+Skip a certain amount of data.
+Length is mandatory.
+      
+Example:
+{'name':'unused', 'type':'skip', 'length': 40}
+SUBPACKET: String
+A special field which denotes the beginning of a subpacket. 
+'length' is ignored, 'type' is optional, 'subpacket' is mandatory.
+
+Example:
+{'name':'action', 'type':'subpacket',
+  'subpacket':{
+    'name':'my subpacket'
+    'fields':[
+        ...
+    ]
+  }
+
+}
+TEXT: String
+Text reads bytes as text.
+Length is mandatory.
+      
+Example:
+{'name':'Name', 'type':'text', 'length': 20}
+UINT: String
+Unsigned integers type used for positive integers.
+Length is mandatory and can range between 1 and 4 bytes.
+      
+Example:
+{'name':'Z Level', 'type':'uint', 'length': 2}
+UTF8: String
+Text reads bytes as UTF8 text.
+Length is mandatory.
+      
+Example:
+{'name':'Pet name', 'type':'utf8', 'length': 40}
+VALID_TYPES: String[][]
+List of valid types
+
+Methods:
+--------
+IsValid(typename: String) -> Boolean
+Check if the name of type is a valid Template filed type.
+Returns: True: is resognized. - False: not recognized.
+
+
+PacketLogger.PacketTemplate
+---------------------------
+Rapresents a general purpose template system for packets. 
+The templates allow to format packets in the logger, making them readable.
+Example of "Damage" (0x0B) packet:
+{
+ 'packetID': 0x0B,
+ 'name': 'Damage 0x0B',
+ 'showHexDump': true,
+ 'fields':[
+   { 'name':'packetID', 'length':1, 'type':'packetID'},
+   { 'name':'Serial', 'length':4, 'type':'serial'},
+   { 'name':'Damage', 'length': 2, 'type':'int'},
+ ]
+}
+
+Properties:
+-----------
+dynamicLength: Boolean
+Advanced settings for PacketReader. Ask Crezdba about DLLImport.Razor.IsDynLength(buff[0])
+fields: List[PacketLogger.FieldTemplate]
+List of fields present in this Packet.
+name: String
+A readable name for the packet, optional but useful.
+packetID: Int32
+packetID, mandatory.
+showHexDump: Boolean
+If showHexDump is true the packet logger will show also the hex dump.
+version: Int32
+Template version,optional
+
+
+PathFinding
+-----------
+This class implements the PathFinding algorithm using A-Star.
+
+Methods:
+--------
+GetPath(dst_x: Int32, dst_y: Int32, ignoremob: Boolean) -> List[Tile]
+Compute the path for the given destination and returns a list of Tile (coordinates).
+Returns: List of Tile objects, each holds a .X and .Y coordinates.
+Go(r: PathFinding.Route) -> Boolean
+Check if a destination is reachable.
+Returns: True: if a destination is reachable.
+PathFindTo(x: Int32, y: Int32, z: Int32 = 0) -> Void
+Go to the given coordinates using Razor pathfinding.
+PathFindTo(destination: Point3D) -> Void
+Go to the given coordinates using Razor pathfinding.
+RunPath(path: List[Tile], timeout: Single = -1, debugMessage: Boolean = False, useResync: Boolean = True) -> Boolean
+
+Tile(x: Int32, y: Int32) -> Tile
+Create a Tile starting from X,Y coordinates (see PathFindig.RunPath)
+Returns: Returns a Tile object
+WalkPath(path: List[Tile], timeout: Single = -1, debugMessage: Boolean = False, useResync: Boolean = True) -> Boolean
+
+runPath(timeout: Single = -1, debugMessage: Boolean = False, useResync: Boolean = True) -> Boolean
+
+Returns: True: if it finish the path in time. False: otherwise
+walkPath(timeout: Single = -1, debugMessage: Boolean = False, useResync: Boolean = True) -> Boolean
+
+
+
+PathFinding.Route
+-----------------
+The Route class is used to configure the PathFinding.
+
+Properties:
+-----------
+DebugMessage: Boolean
+Outputs a debug message. (default: False)
+IgnoreMobile: Boolean
+Ignores any mobiles with the path calculation. (default: 0)
+MaxRetry: Int32
+Number of attempts untill the path calculation is halted. (default: -1, no limit)
+Run: Boolean
+Maximum amount of time to run the path. (default: -1, no limit)
+StopIfStuck: Boolean
+Halts the pathfinding fail to walk the path. (default: 0)
+Timeout: Single
+Maximum amount of time to run the path. (default: -1, no limit)
+UseResync: Boolean
+ReSyncs the path calculation. (default: False)
+X: Int32
+Sets the destination position X. (default: 0)
+Y: Int32
+Sets the destination position Y. (default: 0)
+
+
+Player
+------
+The Player class represent the currently logged in character.
+
+Properties:
+-----------
+AR: Int32
+Resistance to Phisical damage.
+Backpack: Item
+Player backpack, as Item object.
+Bank: Item
+Player bank chest, as Item object.
+Body: Int32
+Player Body or MobileID (see: Mobile.Body)
+Buffs: List[String]
+List of Player active buffs:
+   Meditation
+   Agility
+   Animal Form
+   Arcane Enpowerment
+   Arcane Enpowerment (new)
+   Arch Protection
+   Armor Pierce
+   Attunement
+   Aura of Nausea
+   Bleed
+   Bless
+   Block
+   Bload Oath (caster)
+   Bload Oath (curse)
+   BloodWorm Anemia
+   City Trade Deal
+   Clumsy
+   Confidence
+   Corpse Skin
+   Counter Attack
+   Criminal
+   Cunning
+   Curse
+   Curse Weapon
+   Death Strike
+   Defense Mastery
+   Despair
+   Despair (target)
+   Disarm (new)
+   Disguised
+   Dismount Prevention
+   Divine Fury
+   Dragon Slasher Fear
+   Enchant
+   Enemy Of One
+   Enemy Of One (new)
+   Essence Of Wind
+   Ethereal Voyage
+   Evasion
+   Evil Omen
+   Faction Loss
+   Fan Dancer Fan Fire
+   Feeble Mind
+   Feint
+   Force Arrow
+   Berserk
+   Fly
+   Gaze Despair
+   Gift Of Life
+   Gift Of Renewal
+   Healing
+   Heat Of Battle
+   Hiding
+   Hiryu Physical Malus
+   Hit Dual Wield
+   Hit Lower Attack
+   Hit Lower Defense
+   Honorable Execution
+   Honored
+   Horrific Beast
+   Hawl Of Cacophony
+   Immolating Weapon
+   Incognito
+   Inspire
+   Invigorate
+   Invisibility
+   Lich Form
+   Lighting Strike
+   Magic Fish
+   Magic Reflection
+   Mana Phase
+   Mass Curse
+   Medusa Stone
+   Mind Rot
+   Momentum Strike
+   Mortal Strike
+   Night Sight
+   NoRearm
+   Orange Petals
+   Pain Spike
+   Paralyze
+   Perfection
+   Perseverance
+   Poison
+   Poison Resistance
+   Polymorph
+   Protection
+   Psychic Attack
+   Consecrate Weapon
+   Rage
+   Rage Focusing
+   Rage Focusing (target)
+   Reactive Armor
+   Reaper Form
+   Resilience
+   Rose Of Trinsic
+   Rotworm Blood Disease
+   Rune Beetle Corruption
+   Skill Use Delay
+   Sleep
+   Spell Focusing
+   Spell Focusing (target)
+   Spell Plague
+   Splintering Effect
+   Stone Form
+   Strangle
+   Strength
+   Surge
+   Swing Speed
+   Talon Strike
+   Vampiric Embrace
+   Weaken
+   Wraith Form
+BuffsInfo: List[BuffInfo]
+Returns a list with every detailed active buff
+ColdResistance: Int32
+Resistance to Cold damage.
+Connected: Boolean
+Retrieves Connected State
+Corpses: HashSet[Item]
+Each Death Player corpse item is added here
+DamageChanceIncrease: Int32
+Get total Damage Chance Increase.
+DefenseChanceIncrease: Int32
+Get total Defense Chance Increase.
+Dex: Int32
+Stats value for Dexterity.
+DexterityIncrease: Int32
+Get total Dexterity Increase.
+Direction: String
+Player current direction, as text.
+EnergyResistance: Int32
+Resistance to Energy damage.
+EnhancePotions: Int32
+Get total Enhance Potions.
+Fame: Int32
+Fame has to be reverse engineered from the title so it is just ranges:
+0: neutaral - 3 is highest fame
+FasterCastRecovery: Int32
+Get total Faster Cast Recovery.
+FasterCasting: Int32
+Get total Faster Casting.
+Female: Boolean
+Player is a female.
+FireResistance: Int32
+Resistance to Fire damage.
+Followers: Int32
+Player current amount of pet/followers.
+FollowersMax: Int32
+Player maximum amount of pet/followers.
+Gold: Int32
+Player total gold, in the backpack.
+HasPrimarySpecial: Boolean
+HasSecondarySpecial: Boolean
+HasSpecial: Boolean
+Player have a special abilities active.
+HitPointsIncrease: Int32
+Get total Hit Points Increase.
+HitPointsRegeneration: Int32
+Get total Hit Points Regeneration.
+Hits: Int32
+Current hit points.
+HitsMax: Int32
+Maximum hit points.
+InParty: Boolean
+Player is in praty.
+Int: Int32
+Stats value for Intelligence.
+IntelligenceIncrease: Int32
+Get total Intelligence Increase.
+IsGhost: Boolean
+Player is a Ghost
+Karma: Int32
+Karma has to be reverse engineered from the title so it is just ranges:
+-5: most evil, 0: neutaral, 5 most good
+KarmaTitle: String
+This is the title string returned from the server
+LowerManaCost: Int32
+Get total Lower Mana Cost.
+LowerReagentCost: Int32
+Get total Lower Reagent Cost.
+Luck: Int32
+Player total luck.
+Mana: Int32
+Current mana.
+ManaIncrease: Int32
+Get total Mana Increase.
+ManaMax: Int32
+Maximum mana.
+ManaRegeneration: Int32
+Get total Mana Regeneration.
+Map: Int32
+Player current map, or facet.
+MaxWeight: Int32
+Player maximum weight.
+MaximumHitPointsIncrease: Int32
+Get total Maximum Hit Points Increase.
+MaximumStaminaIncrease: Int32
+Get total Maximum Stamina Increase.
+MobileID: Int32
+Player MobileID or Body (see: Mobile.MobileID)
+Mount: Item
+Player current Mount, as Item object.
+NOTE: On some server the Serial return by this function doesn't match the mount serial.
+Name: String
+Player name.
+Notoriety: Byte
+Player notoriety
+    1: blue, innocent
+    2: green, friend
+    3: gray, neutral
+    4: gray, criminal
+    5: orange, enemy
+    6: red, hostile 
+    6: yellow, invulnerable
+Paralized: Boolean
+Player is Paralized. True also while frozen because of casting of spells.
+Pets: List[Mobile]
+Finds all neutral pets in the area that can be renamed.
+This isn't the server information on your pets, but its good enough for most cases
+PoisonResistance: Int32
+Resistance to Poison damage.
+Poisoned: Boolean
+Player is Poisoned
+Position: Point3D
+Current Player position as Point3D object.
+PrimarySpecial: UInt32
+Quiver: Item
+Player quiver, as Item object.
+ReflectPhysicalDamage: Int32
+Get total Reflect Physical Damage.
+SecondarySpecial: UInt32
+Serial: Int32
+Player unique Serial.
+SpellDamageIncrease: Int32
+Get total Spell Damage Increase.
+Stam: Int32
+Current stamina.
+StamMax: Int32
+Maximum stamina.
+StaminaIncrease: Int32
+Get total Stamina Increase.
+StaminaRegeneration: Int32
+Get total Stamina Regeneration.
+StatCap: Int32
+Get the stats cap.
+StaticMount: Int32
+Retrieves serial of mount set in Filter/Mount GUI.
+Str: Int32
+Stats value for Strenght.
+StrengthIncrease: Int32
+Get total Strength Increase.
+SwingSpeedIncrease: Int32
+Get total Swing Speed Increase.
+Visible: Boolean
+Player is visible, false if hidden.
+WarMode: Boolean
+Player has war mode active.
+Weight: Int32
+Player current weight.
+YellowHits: Boolean
+Player HP bar is not blue, but yellow.
+
+Methods:
+--------
+Area() -> String
+Get the name of the area in which the Player is currently in. (Ex: Britain, Destard, Vesper, Moongate, etc)
+Regions are defined inside by Config/regions.json.
+Returns: Name of the area. Unknown if not recognized.
+Attack(serial: Int32) -> Void
+Attack a Mobile.
+Attack(mobile: Mobile) -> Void
+
+AttackLast() -> Void
+Attack last target.
+AttackType(graphic: Int32, rangemax: Int32, selector: String, color: List[Int32] = None, notoriety: List[Byte] = None) -> Boolean
+
+AttackType(graphics: List[Int32], rangemax: Int32, selector: String, color: List[Int32] = None, notoriety: List[Byte] = None) -> Boolean
+
+BuffTime(buffname: String) -> Int32
+
+BuffsExist(buffname: String, okayToGuess: Boolean = True) -> Boolean
+Check if a buff is active, by buff name.
+Returns: True: if the buff is active - False: otherwise.
+ChatAlliance(msg: String) -> Void
+Send message to the alliace chat.
+ChatAlliance(msg: Int32) -> Void
+
+ChatChannel(msg: String) -> Void
+Send an chat channel message.
+ChatChannel(msg: Int32) -> Void
+
+ChatEmote(color: Int32, msg: Int32) -> Void
+
+ChatEmote(color: Int32, msg: String) -> Void
+Send an emote in game.
+ChatGuild(msg: String) -> Void
+Send message to the guild chat.
+ChatGuild(msg: Int32) -> Void
+
+ChatParty(msg: String, recepient_serial: Int32 = 0) -> Void
+Send message in arty chat. If a recepient_serial is specified, the message is private.
+ChatSay(color: Int32, msg: String) -> Void
+Send message in game.
+ChatSay(color: Int32, msg: Int32) -> Void
+
+ChatSay(msg: String) -> Void
+Send message in game using 1153 for color.
+ChatWhisper(color: Int32, msg: String) -> Void
+Send an wishper message.
+ChatWhisper(color: Int32, msg: Int32) -> Void
+
+ChatYell(color: Int32, msg: String) -> Void
+Send an yell message.
+ChatYell(color: Int32, msg: Int32) -> Void
+
+CheckLayer(layer: String) -> Boolean
+Check if a Layer is equipped by the Item.
+Returns: True: the Layer is occupied by an Item - False: otherwise.
+ClearCorpseList() -> Void
+Clear the Player corpse item list
+DistanceTo(target: UOEntity) -> Int32
+Returns the distance between the Player and a Mobile or an Item.
+Returns: Distance in number of tiles.
+DistanceTo(target: Int32) -> Int32
+
+EmoteAction(action: String) -> Void
+
+EquipItem(serial: Int32) -> Void
+Equip an Item
+EquipItem(item: Item) -> Void
+
+EquipLastWeapon() -> Void
+Equip the last used weapon
+EquipUO3D(serials: List[Int32]) -> Void
+
+EquipUO3D(_serials: PythonList) -> Void
+Equip a python list of item by using UO3D packet.
+Fly(status: Boolean) -> Void
+Enable or disable Gargoyle Flying.
+GetBuffInfo(buffName: String, okayToGuess: Boolean = True) -> BuffInfo
+Check if buff information is active by buff name and returns it.
+Returns: Buff information
+GetItemOnLayer(layer: String) -> Item
+Returns the Item associated with a Mobile Layer.
+Returns: Item for the layer. Return null if not found or Layer invalid.
+GetPropStringByIndex(index: Int32) -> String
+Get a single line of Properties of the Player, from the tooltip, as text.
+Returns: Single line of text.
+GetPropStringList() -> List[String]
+Get the list of Properties of the Player, as list of lines of the tooltip.
+Returns: List of text lines.
+GetPropValue(name: String) -> Int32
+Get the numeric value of a specific Player property, from the tooltip.
+Returns: n: value of the propery 
+0: property not found.
+1: property found, but not numeric.
+GetRealSkillValue(skillname: String) -> Double
+Get the base/real value of the skill for the given the skill name.
+Returns: Value of the skill.
+GetSkillCap(skillname: String) -> Double
+Get the skill cap for the given the skill name.
+Returns: Value of the skill cap.
+GetSkillStatus(skillname: String) -> Int32
+Get lock status for a specific skill.
+Returns: Lock status:
+     0: Up     
+     1: Down 
+     2: Locked 
+    -1: Error
+GetSkillValue(skillname: String) -> Double
+Get the value of the skill, with modifiers, for the given the skill name.
+Returns: Value of the skill.
+GetStatStatus(statname: String) -> Int32
+Get lock status for a specific stats.
+Returns: Lock status:
+     0: Up     
+     1: Down 
+     2: Locked
+GuildButton() -> Void
+Press the Guild menu button in the paperdoll.
+HeadMessage(color: Int32, msg: String) -> Void
+Display a message above the Player. Visible only by the Player.
+HeadMessage(color: Int32, msg: Int32) -> Void
+
+InRange(entity: UOEntity, range: Int32) -> Boolean
+Check if the mobile or item is within a certain range (&lt;=).
+Returns: True: Item is in range - False: otherwise.
+InRange(serial: Int32, range: Int32) -> Boolean
+Check if the serial is within a certain range (&lt;=).
+Returns: True: serial is in range - False: otherwise.
+InRangeItem(item: Int32, range: Int32) -> Boolean
+Check if the Item is within a certain range (&lt;=).
+Returns: True: Item is in range - False: otherwise.
+InRangeItem(item: Item, range: Int32) -> Boolean
+
+InRangeMobile(mobile: Int32, range: Int32) -> Boolean
+Check if the Mobile is within a certain range (&lt;=).
+Returns: True: Mobile is in range - False: otherwise.
+InRangeMobile(mobile: Mobile, range: Int32) -> Boolean
+Check if the mobile is within a certain range (&lt;=).
+Returns: True: Item is in range - False: otherwise.
+InvokeVirtue(virtue: String) -> Void
+Invoke a virtue by name.
+InvokeVirtue(virtue: Int32) -> Void
+Invoke a virtue by name.
+KickMember(serial: Int32) -> Void
+Kick a member from party by serial. Only for party leader
+LeaveParty(force: Boolean = False) -> Void
+Leaves a party.
+MapSay(msg: String) -> Void
+Send message in the Map chat.
+MapSay(msg: Int32) -> Void
+
+OpenPaperDoll() -> Void
+Open Player's Paperdoll
+PartyAccept(from_serial: Int32 = 0, force: Boolean = False) -> Boolean
+Accept an incoming party offer. In case of multiple party oebnding invitation, from_serial is specified,
+Returns: True: if you are now in a party - False: otherwise.
+PartyCanLoot(CanLoot: Boolean) -> Void
+Set the Party loot permissions.
+PartyInvite() -> Void
+Invite a person to a party. Prompt for a in-game Target.
+PathFindTo(x: Int32, y: Int32, z: Int32) -> Void
+Go to the given coordinates using Client-provided pathfinding.
+PathFindTo(Location: Point3D) -> Void
+Go to the position supplied using Client-provided pathfinding.
+PathFindTo(Location: Point3D) -> Void
+Go to the position supplied using Client-provided pathfinding.
+QuestButton() -> Void
+Press the Quest menu button in the paperdoll.
+Run(direction: String) -> Boolean
+Run one step in the specified direction and wait for the confirmation of the new position by the server.
+If the character is not facing the direction, the first step only "turn" the Player in the required direction.
+
+Info:
+Walking:  5 tiles/sec (~200ms between each step)
+Running: 10 tiles/sec (~100ms between each step)
+Returns: True: Destination reached - False: Coudn't reach the destination.
+SetSkillStatus(skillname: String, status: Int32) -> Void
+Set lock status for a specific skill.
+SetStatStatus(statname: String, status: Int32) -> Void
+Set lock status for a specific skill.
+SetStaticMount(serial: Int32) -> Void
+Sets serial of mount set in Filter/Mount GUI.
+SetWarMode(warflag: Boolean) -> Void
+Set war Mode on on/off.
+SpellIsEnabled(spellname: String) -> Boolean
+Check if spell is active using the spell name (for spells that have this function).
+Returns: True: the spell is enabled - False: otherwise,.
+SumAttribute(attributename: String) -> Single
+Scan all the equipped Item, returns the total value of a specific property. (ex: Lower Reagent Cost )
+NOTE: This function is slow.
+Returns: The total value as number.
+ToggleAlwaysRun() -> Void
+Toggle on/off the awlays run flag. 
+NOTE: Works only on OSI client.
+TrackingArrow(x: UInt16, y: UInt16, display: Boolean, target: UInt32 = 0) -> Void
+Display a fake tracking arrow
+UnEquipItemByLayer(layer: String, wait: Boolean = True) -> Void
+Unequip the Item associated with a specific Layer.
+UnEquipUO3D(_layers: List[String]) -> Void
+
+UnEquipUO3D(_layers: PythonList) -> Void
+UnEquip a python list of layer names by using UO3D packet.
+UpdateKarma() -> Boolean
+Costly! 
+Updates the Fame and Karma of the Mobile, but it can take as long as 1 second to complete.
+Returns: True if successful, False if not server packet received
+UseSkill(skillname: String, target: Int32, wait: Boolean = True) -> Void
+Use a specific skill, and optionally apply that skill to the target specified.
+UseSkill(skillname: String, target: Item, wait: Boolean = True) -> Void
+
+UseSkill(skillname: String, target: Mobile, wait: Boolean = True) -> Void
+
+UseSkill(skillname: String, wait: Boolean) -> Void
+
+UseSkill(skillname: String) -> Void
+
+UseSkillOnly(skillname: String, wait: Boolean) -> Void
+
+Walk(direction: String) -> Boolean
+
+WeaponClearSA() -> Void
+Disable any active Special Ability of the weapon.
+WeaponDisarmSA() -> Void
+Toggle Disarm Ability.
+WeaponPrimarySA() -> Void
+Toggle on/off the primary Special Ability of the weapon.
+WeaponSecondarySA() -> Void
+Toggle on/off the secondary Special Ability of the weapon.
+WeaponStunSA() -> Void
+Toggle Stun Ability.
+Zone() -> String
+Get the type of zone in which the Player is currently in.
+Regions are defined inside by Config/regions.json.
+Returns: Towns
+Dungeons
+Guarded
+Forest
+Unknown
+
+
+Point2D
+-------
+
+Properties:
+-----------
+X: Int32
+Y: Int32
+
+Methods:
+--------
+ToString() -> String
+
+
+
+Point3D
+-------
+
+Properties:
+-----------
+X: Int32
+Y: Int32
+Z: Int32
+
+Methods:
+--------
+ToString() -> String
+
+
+
+Property
+--------
+
+Properties:
+-----------
+Args: String
+Number: Int32
+
+Methods:
+--------
+ToString() -> String
+
+
+
+Restock
+-------
+The Restock class allow you to interact with the Restock Agent, via scripting.
+
+Methods:
+--------
+ChangeList(listName: String) -> Void
+Change the Restock's active list.
+FStart() -> Void
+Start the Restock Agent on the currently active list.
+FStop() -> Void
+Stop the Restock Agent.
+RunOnce(restockerName: String, sourceBag: Int32, destBag: Int32, dragDelay: Int32) -> Void
+
+Status() -> Boolean
+Check Restock Agent status
+Returns: True: if the Restock is running - False: otherwise
+
+
+Scavenger
+---------
+The Scavenger class allow you to interect with the Scavenger Agent, via scripting.
+
+Methods:
+--------
+ChangeList(listName: String) -> Void
+Change the Scavenger's active list.
+GetScavengerBag() -> UInt32
+Get current Scravenger destination container.
+Returns: Serial of the container.
+ResetIgnore() -> Void
+
+RunOnce(scavengerList: List[Scavenger.ScavengerItem], millisec: Int32, filter: Items.Filter) -> Void
+
+Start() -> Void
+Start the Scavenger Agent on the currently active list.
+Status() -> Boolean
+Check Scavenger Agent status
+Returns: True: if the Scavenger is running - False: otherwise
+Stop() -> Void
+Stop the Scavenger Agent.
+
+
+SellAgent
+---------
+The SellAgent class allow you to interect with the SellAgent, via scripting.
+
+Methods:
+--------
+ChangeList(listName: String) -> Void
+
+Disable() -> Void
+
+Enable() -> Void
+
+Status() -> Boolean
+
+
+
+Sound
+-----
+The Sound class provides an api to manipulate Sounds. 
+For now it just turns logging for sounds on / off or waits for a list of sounds
+All the WeakRef stuff seems like overkill and a pia. 
+The problem was if you started the wait and then killed the python script, the entry in the waiters list just stayed forever
+The only way around this is to have a weakref stored in the list, then if the local var ManualResetEvent went out of scope, 
+the WeakRef will go to null.  At end of loop we clean up all null entries so the list stays clean.
+
+Methods:
+--------
+AddFilter(name: String, sounds: List[Int32]) -> Void
+
+Log(activateLogging: Boolean) -> Void
+Enables/Disables logging of incoming sound requests
+OnFilter(p: PacketReader, args: PacketHandlerEventArgs) -> Void
+
+RemoveFilter(name: String) -> Void
+Removes a filter of incoming sound requests
+WaitForSound(sounds: List[Int32], timeout: Int32 = -1) -> Boolean
+
+
+
+Spells
+------
+The Spells class allow you to cast any spell and use abilities, via scripting.
+
+Methods:
+--------
+Cast(SpellName: String, target: UInt32, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast spell using the spell name. See the skill-specific functions to get the full list of spell names.
+Optionally is possible to specify the Mobile or a Serial as target of the spell. Upon successful casting, the target will be executed automatiaclly by the server.
+NOTE: The "automatic" target is not supported by all shards, but you can restort to the Target class to handle it manually.
+Cast(SpellName: String, mobile: Mobile, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+
+Cast(SpellName: String, waitAfter: Int32 = 0) -> Void
+
+CastBushido(SpellName: String, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast a Bushido spell using the spell name.
+CastChivalry(SpellName: String, target: UInt32, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast a Chivalry spell using the spell name.
+Optionally is possible to specify the Mobile or a Serial as target of the spell. Upon successful casting, the target will be executed automatiaclly by the server.
+NOTE: The "automatic" target is not supported by all shards, but you can restort to the Target class to handle it manually.
+CastChivalry(SpellName: String, mobile: Mobile, wait: Boolean = True) -> Void
+
+CastChivalry(SpellName: String, waitAfter: Int32 = 0) -> Void
+
+CastCleric(SpellName: String, target: UInt32, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast a Cleric spell using the spell name.
+Optionally is possible to specify the Mobile or a Serial as target of the spell. Upon successful casting, the target will be executed automatiaclly by the server.
+NOTE: The "automatic" target is not supported by all shards, but you can restort to the Target class to handle it manually.
+CastCleric(SpellName: String, mobile: Mobile, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+
+CastCleric(SpellName: String, waitAfter: Int32 = 0) -> Void
+
+CastDruid(SpellName: String, target: UInt32, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast a Druid spell using the spell name.
+Optionally is possible to specify the Mobile or a Serial as target of the spell. Upon successful casting, the target will be executed automatiaclly by the server.
+NOTE: The "automatic" target is not supported by all shards, but you can restort to the Target class to handle it manually.
+CastDruid(SpellName: String, mobile: Mobile, wait: Boolean = True) -> Void
+
+CastDruid(SpellName: String, waitAfter: Int32 = 0) -> Void
+
+CastLastSpell(target: UInt32, wait: Boolean = True) -> Void
+Cast again the last casted spell, on last target.
+CastLastSpell(m: Mobile, wait: Boolean = True) -> Void
+
+CastLastSpell(wait: Boolean = True) -> Void
+
+CastLastSpellLastTarget() -> Void
+Cast again the last casted spell, on last target.
+CastMagery(SpellName: String, target: UInt32, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast a Magery spell using the spell name.
+Optionally is possible to specify the Mobile or a Serial as target of the spell. Upon successful casting, the target will be executed automatiaclly by the server.
+NOTE: The "automatic" target is not supported by all shards, but you can restort to the Target class to handle it manually.
+CastMagery(SpellName: String, mobile: Mobile, wait: Boolean = True) -> Void
+
+CastMagery(SpellName: String, waitAfter: Int32 = 0) -> Void
+
+CastMastery(SpellName: String, target: UInt32, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast a Mastery spell using the spell name.
+Optionally is possible to specify the Mobile or a Serial as target of the spell. Upon successful casting, the target will be executed automatiaclly by the server.
+NOTE: The "automatic" target is not supported by all shards, but you can restort to the Target class to handle it manually.
+CastMastery(SpellName: String, mobile: Mobile, wait: Boolean = True) -> Void
+
+CastMastery(SpellName: String, waitAfter: Int32 = 0) -> Void
+
+CastMysticism(SpellName: String, target: UInt32, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast a Mysticism spell using the spell name.
+Optionally is possible to specify the Mobile or a Serial as target of the spell. Upon successful casting, the target will be executed automatiaclly by the server.
+NOTE: The "automatic" target is not supported by all shards, but you can restort to the Target class to handle it manually.
+CastMysticism(SpellName: String, mobile: Mobile, wait: Boolean = True) -> Void
+
+CastMysticism(SpellName: String, waitAfter: Int32 = 0) -> Void
+
+CastNecro(SpellName: String, target: UInt32, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast a Necromany spell using the spell name.
+Optionally is possible to specify the Mobile or a Serial as target of the spell. Upon successful casting, the target will be executed automatiaclly by the server.
+NOTE: The "automatic" target is not supported by all shards, but you can restort to the Target class to handle it manually.
+CastNecro(SpellName: String, mobile: Mobile, wait: Boolean = True) -> Void
+
+CastNecro(SpellName: String, waitAfter: Int32 = 0) -> Void
+
+CastNinjitsu(SpellName: String, target: UInt32, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast a Ninjitsu spell using the spell name.
+Optionally is possible to specify the Mobile or a Serial as target of the spell. Upon successful casting, the target will be executed automatiaclly by the server.
+NOTE: The "automatic" target is not supported by all shards, but you can restort to the Target class to handle it manually.
+CastNinjitsu(SpellName: String, mobile: Mobile, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+
+CastNinjitsu(SpellName: String, waitAfter: Int32 = 0) -> Void
+
+CastSpellweaving(SpellName: String, target: UInt32, wait: Boolean = True, waitAfter: Int32 = 0) -> Void
+Cast a Spellweaving spell using the spell name.
+Optionally is possible to specify the Mobile or a Serial as target of the spell. Upon successful casting, the target will be executed automatiaclly by the server.
+NOTE: The "automatic" target is not supported by all shards, but you can restort to the Target class to handle it manually.
+CastSpellweaving(SpellName: String, mobile: Mobile, wait: Boolean = True) -> Void
+
+CastSpellweaving(SpellName: String, waitAfter: Int32 = 0) -> Void
+
+Interrupt() -> Void
+Interrupt the casting of a spell by performing an equip/unequip.
+
+
+Statics
+-------
+The Statics class provides access to informations about the Map, down to the individual tile.
+When using this function it's important to remember the distinction between Land and Tile:
+Land
+----
+For a given (X,Y,map) there can be only 1 (0 zero) Land item, and has 1 specific Z coordinate.
+Tile
+----
+For a given (X,Y,map) there can be any number of Tile items.
+
+Methods:
+--------
+CheckDeedHouse(x: Int32, y: Int32) -> Boolean
+Check if the given Tile is occupied by a private house.
+Need to be in-sight, on most servers the maximum distance is 18 tiles.
+Returns: True: The tile is occupied - False: otherwise
+GetItemData(StaticID: Int32) -> ItemData
+
+GetLandFlag(staticID: Int32, flagname: String) -> Boolean
+Land: Check Flag value of a given Land item.
+Returns: True: if the Flag is active - False: otherwise
+GetLandID(x: Int32, y: Int32, map: Int32) -> Int32
+Land: Return the StaticID of the Land item, give the coordinates and map.
+Returns: Return the StaticID of the Land tile
+GetLandName(StaticID: Int32) -> String
+Land: Get the name of a Land item given the StaticID.
+Returns: The name of the Land item.
+GetLandZ(x: Int32, y: Int32, map: Int32) -> Int32
+Land: Return the Z coordinate (height) of the Land item, give the coordinates and map.
+GetStaticsLandInfo(x: Int32, y: Int32, map: Int32) -> Statics.TileInfo
+Land: Return a TileInfo representing the Land item for a given X,Y, map.
+Returns: A single TileInfo related a Land item.
+GetStaticsTileInfo(x: Int32, y: Int32, map: Int32) -> List[Statics.TileInfo]
+Tile: Return a list of TileInfo representing the Tile items for a given X,Y, map.
+Returns: A list of TileInfo related to Tile items.
+GetTileFlag(StaticID: Int32, flagname: String) -> Boolean
+Tile: Check Flag value of a given Tile item.
+Returns: True: if the Flag is active - False: otherwise
+GetTileHeight(StaticID: Int32) -> Int32
+Tile: Get hight of a Tile item, in Z coordinate reference.
+Returns: Height of a Tile item.
+GetTileName(StaticID: Int32) -> String
+Tile: Get the name of a Tile item given the StaticID.
+Returns: The name of the Land item.
+
+
+Statics.TileInfo
+----------------
+The TileInfo class hold the values represeting Tile or Land items for a given X,Y coordinate.
+
+Properties:
+-----------
+Hue: Int32
+ID: UInt16
+StaticHue: Int32
+StaticID: Int32
+StaticZ: Int32
+Z: Int32
+
+
+Target
+------
+The Target class provides various methods for targeting Land, Items and Mobiles in game.
+
+Methods:
+--------
+AttackTargetFromList(target_name: String) -> Void
+Attack Target from gui filter selector, in Targetting tab.
+Cancel() -> Void
+Cancel the current target.
+ClearLast() -> Void
+Clear the last target.
+ClearLastAttack() -> Void
+Clear the last attacked target
+ClearLastandQueue() -> Void
+Clear last target and target queue.
+ClearQueue() -> Void
+Clear Queue Target.
+GetLast() -> Int32
+Get serial number of last target
+Returns: Serial as number.
+GetLastAttack() -> Int32
+Get serial number of last attack target
+Returns: Serial as number.
+GetTargetFromList(target_name: String) -> Mobile
+Get Mobile object from GUI filter selector, in Targetting tab.
+Returns: Mobile object matching. None: not found
+HasTarget(targetFlag: String = Any) -> Boolean
+Get the status of the in-game target cursor
+Optionally specify the target flag and check if the cursor is "Beneficial", "Harmful", or "Neutral".
+Returns: True if the client has a target cursor and the optional flag matches; otherwise, false.
+Last() -> Void
+Execute the target on the last Item or Mobile targeted.
+LastQueued() -> Void
+Enqueue the next target on the last Item or Mobile targeted.
+LastUsedObject() -> Int32
+Returns the serial of last object used by the player.
+PerformTargetFromList(target_name: String) -> Void
+Execute Target from GUI filter selector, in Targetting tab.
+PromptGroundTarget(message: String = Select Ground Position, color: Int32 = 945) -> Point3D
+Prompt a target in-game, wait for the Player to select the ground. Can also specific a text message for prompt.
+Returns: A Point3D object, containing the X,Y,Z coordinate
+PromptTarget(message: String = Select Item or Mobile, color: Int32 = 945) -> Int32
+Prompt a target in-game, wait for the Player to select an Item or a Mobile. Can also specific a text message for prompt.
+Returns: Serial of the selected object.
+Self() -> Void
+Execute the target on the Player.
+SelfQueued() -> Void
+Enqueue the next target on the Player.
+SetLast(serial: Int32, wait: Boolean = True) -> Void
+Set the last target to specific mobile, using the serial.
+SetLast(mob: Mobile) -> Void
+
+SetLastTargetFromList(target_name: String) -> Void
+Set Last Target from GUI filter selector, in Targetting tab.
+TargetExecute(x: Int32, y: Int32, z: Int32, StaticID: Int32) -> Void
+Execute target on specific serial, item, mobile, X Y Z point.
+TargetExecute(x: Int32, y: Int32, z: Int32) -> Void
+
+TargetExecute(serial: Int32) -> Void
+
+TargetExecute(entity: UOEntity) -> Void
+Targets the Mobil or Item specified
+TargetExecuteRelative(mobile: Mobile, offset: Int32) -> Void
+Execute target on specific land point with offset distance from Mobile. Distance is calculated by target Mobile.Direction.
+TargetExecuteRelative(serial: Int32, offset: Int32) -> Void
+
+TargetResource(item_serial: Int32, resource_number: Int32) -> Void
+Find and target a resource using the specified item.
+TargetResource(item_serial: Int32, resource_name: String) -> Void
+
+TargetResource(item: Item, resouce_name: String) -> Void
+
+TargetResource(item: Item, resoruce_number: Int32) -> Void
+
+TargetType(graphic: Int32, color: Int32 = -1, range: Int32 = 20, selector: String = Nearest, notoriety: List[Byte] = None) -> Boolean
+
+WaitForTarget(delay: Int32, noshow: Boolean = False) -> Boolean
+Wait for the cursor to show the target, pause the script for a maximum amount of time. and optional flag True or False. True Not show cursor, false show it
+WaitForTargetOrFizzle(delay: Int32 = 5000, noshow: Boolean = False) -> Boolean
+Wait for the cursor to show the target, or the sound for fizzle (0x5c) or pause the script for a maximum amount of time. 
+and an optional flag True or False. True Not show cursor, false show it
+
+
+Tile
+----
+Class representing an (X,Y) coordinate. Optimized for pathfinding tasks.
+
+Properties:
+-----------
+Conflict: Boolean
+X: Int32
+Coordinate X.
+Y: Int32
+Coordinate Y.
+
+Methods:
+--------
+Equals(obj: Object) -> Boolean
+
+GetHashCode() -> Int32
+
+ToString() -> String
+
+
+
+Timer
+-----
+Timer are normally used to display messages after a certain period of time. 
+They are also often used to keep track of the maximum amount of time for an action to complete.
+
+Methods:
+--------
+Check(name: String) -> Boolean
+Check if a timer object is expired or not.
+Returns: true if not expired, false if expired
+Create(name: String, delay: Int32, message: String) -> Void
+Create a timer with the provided name that will expire in ms_timer time (in milliseconds)
+Create(name: String, delay: Int32) -> Void
+
+Remaining(name: String) -> Int32
+Get remaining time for a named timer
+Returns: Returns the milliseconds remaining for a timer.
+
+
+Trade
+-----
+
+Methods:
+--------
+Accept(TradeID: Int32, accept: Boolean = True) -> Boolean
+Set the accept state of the trade
+Returns: True: Trade found, False: Trade not found
+Accept(accept: Boolean = True) -> Boolean
+
+Cancel(TradeID: Int32) -> Boolean
+Set the accept state of the trade
+Returns: True: Trade found, False: Trade not found
+Cancel() -> Boolean
+
+Offer(TradeID: Int32, gold: Int32, platinum: Int32, quiet: Boolean = False) -> Boolean
+Update the amount of gold and platinum in the trade. ( client view dosen't update )
+Returns: True: Trade found, False: Trade not found
+Offer(gold: Int32, platinum: Int32, quiet: Boolean = False) -> Boolean
+
+TradeList() -> List[Trade.TradeData]
+Returns the list of currently active Secure Trading gumps, sorted by LastUpdate.
+Returns: A list of Player.SecureTrade objects. Each containing the details of each trade window.
+
+
+Trade.TradeData
+---------------
+SecureTrades holds the information about a single tradeing window.
+
+Properties:
+-----------
+AcceptMe: Boolean
+Trade has been accepted by the Player (me).
+AcceptTrader: Boolean
+Trade has been accepted by the Trader (other).
+ContainerMe: Int32
+Serial of the container holding the items offerd by the Player (me).
+ContainerTrader: Int32
+Serial of the container holding the items offerd by the Trader (other).
+GoldMax: Int32
+Maximum amount of Gold available for the Player (me).
+GoldMe: Int32
+Amount of Gold offerd by the Player (me).
+GoldTrader: Int32
+Amount of Gold offerd by the Trader (other).
+LastUpdate: Single
+Last update of the Trade as UnixTime ( format: "Seconds,Milliseconds" from 1-1-1970 )
+NameTrader: String
+Name of the Trader (other).
+PlatinumMax: Int32
+Maximum amount of Platinum available for the Player (me).
+PlatinumMe: Int32
+Amount of Platinum offerd by the Player (me).
+PlatinumTrader: Int32
+Amount of Platinum offerd by the Trader (other).
+SerialTrader: Int32
+Serial of the Trader (other) .
+TradeID: Int32
+ID of the Trade.
+
+
+Vendor
+------
+@experimental
+The Vendor class allow you to read the list items purchased last.
+
+Properties:
+-----------
+LastBuyList: List[Item]
+LastResellList: List[Item]
+
+Methods:
+--------
+Buy(vendorSerial: Int32, itemName: String, amount: Int32, maxPrice: Int32 = -1) -> Boolean
+Attempts to buy the item from the vendor specified.
+<param name="vendorSerial">The Vendor to buy from</param>
+<param name="itemName">the name of the item to buy (can be partial)</param>
+<param name="amount">amount to attempt to buy</param>
+<param name="maxPrice">Don't buy them if the cost exceeds this price.
+default value = -1 means don't check price</param>
+Returns True if a purchase is made, False otherwise
+Buy(vendorSerial: Int32, itemID: Int32, amount: Int32, maxPrice: Int32 = -1) -> Boolean
+Attempts to buy the item from the vendor specified.
+<param name="vendorSerial">The Vendor to buy from</param>
+<param name="itemID">the itemID of the type of item to buy</param>
+<param name="amount">amount to attempt to buy</param>
+<param name="maxPrice">Don't buy them if the cost exceeds this price.
+default value = -1 means don't check price</param>
+Returns True if a purchase is made, False otherwise
+BuyList(vendorSerial: Int32 = -1) -> List[Vendor.BuyItem]
+Get the list of items purchased in the last trade, with a specific Vendor.
+Returns: A list of BuyItem
+
+
+Vendor.BuyItem
+--------------
+The BuyItem class store informations about a recently purchased item.
+
+Properties:
+-----------
+Amount: Int32
+ItemID: Int32
+Name: String
+Price: Int32
+Serial: Int32
+
+

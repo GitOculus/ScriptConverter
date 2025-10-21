@@ -1,5 +1,6 @@
 using ClassicUO.Assets;
 using ClassicUO.Game.GameObjects;
+using ClassicUO.Game.Managers;
 
 namespace ClassicUO.LegionScripting.PyClasses;
 
@@ -53,12 +54,46 @@ public class PyGameObject
     /// <summary>
     /// The graphic ID of the object, representing its visual appearance.
     /// </summary>
-    public ushort Graphic;
+    public ushort Graphic { get => field;
+        set
+        {
+            if (_gameObject == null || _gameObject.IsDestroyed)
+                return;
+
+            MainThreadQueue.EnqueueAction(() => _gameObject.Graphic = value);
+
+            field = value;
+        }
+    }
 
     /// <summary>
     /// The hue (color tint) applied to the object.
     /// </summary>
-    public ushort Hue;
+    public ushort Hue { get => field;
+        set
+        {
+            if (_gameObject == null || _gameObject.IsDestroyed)
+                return;
+
+            MainThreadQueue.EnqueueAction(() => _gameObject.Hue = value);
+
+            field = value;
+        }
+    }
+
+    public int Distance => MainThreadQueue.InvokeOnMainThread(() => _gameObject?.Distance ?? 0);
+
+    /// <summary>
+    /// Set the hue of a game object.
+    /// </summary>
+    /// <param name="hue"></param>
+    public void SetHue(ushort hue)
+    {
+        if (_gameObject == null || _gameObject.IsDestroyed)
+            return;
+
+        MainThreadQueue.EnqueueAction(() => _gameObject.Hue = hue);
+    }
 
     /// <summary>
     /// Determines if there is line of sight from the specified observer to this object.

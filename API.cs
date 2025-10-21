@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game;
@@ -18,28 +19,34 @@ using ClassicUO.LegionScripting.PyClasses;
 using ClassicUO.Network;
 using ClassicUO.Utility;
 using FontStashSharp.RichText;
+using IronPython.Modules;
 using IronPython.Runtime;
 using Microsoft.Scripting.Hosting;
+using Microsoft.Scripting.Utils;
 using Microsoft.Xna.Framework;
 using Button = ClassicUO.Game.UI.Controls.Button;
 using Control = ClassicUO.Game.UI.Controls.Control;
 using Label = ClassicUO.Game.UI.Controls.Label;
 using Lock = ClassicUO.Game.Data.Lock;
 using RadioButton = ClassicUO.Game.UI.Controls.RadioButton;
+using CUOKeyboard = ClassicUO.Input.Keyboard;
 
 namespace ClassicUO.LegionScripting
 {
     /// <summary>
     /// Python scripting access point
     /// </summary>
-    public class API
+    public class API : IDisposable
     {
+        private volatile bool disposed = false;
+
         public API(ScriptEngine engine)
         {
             this.engine = engine;
+            Events = new Events(engine, this);
         }
 
-        private ScriptEngine engine;
+        internal ScriptEngine engine;
 
         private ConcurrentBag<Gump> gumps = new();
 
@@ -47,8 +54,10 @@ namespace ClassicUO.LegionScripting
 
         private readonly Queue<Action> scheduledCallbacks = new();
         private static readonly ConcurrentDictionary<string, object> sharedVars = new();
+        private readonly ConcurrentDictionary<string, object> hotkeyCallbacks = new();
+        private readonly ConcurrentDictionary<string, bool> pressedKeys = new();
 
-        private void ScheduleCallback(Action action)
+        internal void ScheduleCallback(Action action)
         {
             lock (scheduledCallbacks)
             {
@@ -60,6 +69,24 @@ namespace ClassicUO.LegionScripting
                     GameActions.Print(World, "Python Scripting Error: Too many callbacks registered!");
                 }
             }
+        }
+
+        internal void ScheduleCallback(object callback, params object[] args)
+        {
+            if (callback == null || !engine.Operations.IsCallable(callback))
+                return;
+
+            ScheduleCallback(() =>
+            {
+                try
+                {
+                    engine.Operations.Invoke(callback, args);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Script callback error: {ex}");
+                }
+            });
         }
 
         /// <summary>
@@ -97,6 +124,55 @@ namespace ClassicUO.LegionScripting
         private World World = Client.Game.UO.World;
         private Item backpack;
         private PlayerMobile player;
+        private bool keyboardHooked = false;
+        private readonly object hookLock = new object();
+
+        private void EnsureKeyboardHook()
+        {
+            lock (hookLock)
+            {
+                if (keyboardHooked) return;
+
+                CUOKeyboard.KeyDownEvent += OnKeyDown;
+                CUOKeyboard.KeyUpEvent += OnKeyUp;
+
+                keyboardHooked = true;
+            }
+        }
+
+        private void OnKeyDown(string hotkey)
+        {
+            if (disposed) return;
+
+            if (pressedKeys.TryAdd(hotkey, true) && hotkeyCallbacks.TryGetValue(hotkey, out var callback))
+            {
+                ScheduleCallback(callback);
+            }
+        }
+
+        private void OnKeyUp(string hotkey)
+        {
+            if (disposed) return;
+
+            pressedKeys.TryRemove(hotkey, out _);
+        }
+
+        public void Dispose()
+        {
+            if (disposed) return;
+            disposed = true;
+
+            if (keyboardHooked)
+            {
+                CUOKeyboard.KeyDownEvent -= OnKeyDown;
+                CUOKeyboard.KeyUpEvent -= OnKeyUp;
+                keyboardHooked = false;
+            }
+
+            hotkeyCallbacks.Clear();
+            pressedKeys.Clear();
+
+        }
 
         public ConcurrentQueue<PyJournalEntry> JournalEntries
         {
@@ -113,7 +189,7 @@ namespace ClassicUO.LegionScripting
             get
             {
                 if (backpack == null)
-                    backpack = MainThreadQueue.InvokeOnMainThread(() => World.Player.FindItemByLayer(Game.Data.Layer.Backpack));
+                    backpack = MainThreadQueue.InvokeOnMainThread(() => World.Player.Backpack);
 
                 return backpack;
             }
@@ -137,10 +213,11 @@ namespace ClassicUO.LegionScripting
         /// <summary>
         /// Return the player's bank container serial if open, otherwise 0
         /// </summary>
-        public uint Bank {
+        public uint Bank
+        {
             get
             {
-                var i = MainThreadQueue.InvokeOnMainThread(()=>World.Player.FindItemByLayer(Layer.Bank));
+                var i = MainThreadQueue.InvokeOnMainThread(() => World.Player.FindItemByLayer(Layer.Bank));
                 return i != null ? i.Serial : 0;
             }
         }
@@ -176,6 +253,19 @@ namespace ClassicUO.LegionScripting
         /// Access useful player settings.
         /// </summary>
         public static PyProfile PyProfile = new();
+
+        public Events Events;
+
+        /// <summary>
+        /// Check if the script has been requested to stop.
+        /// ```py
+        /// while not API.StopRequested:
+        ///   DoSomeStuff()
+        /// ```
+        /// </summary>
+        public volatile bool StopRequested;
+
+        public CancellationTokenSource CancellationToken = new();
 
         #endregion
 
@@ -213,6 +303,51 @@ namespace ClassicUO.LegionScripting
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Register or unregister a Python callback for a hotkey.
+        /// ### Register:
+        /// ```py
+        /// def on_shift_a():
+        ///     API.SysMsg("SHIFT+A pressed!")
+        /// API.OnHotKey("SHIFT+A", on_shift_a)
+        /// while True:
+        ///   API.ProcessCallbacks()
+        ///   API.Pause(0.1)
+        /// ```
+        /// ### Unregister:
+        /// ```py
+        /// API.OnHotKey("SHIFT+A")
+        /// ```
+        /// The <paramref name="key"/> can include modifiers (CTRL, SHIFT, ALT),
+        /// for example: "CTRL+SHIFT+F1" or "ALT+A".
+        /// </summary>
+        /// <param name="key">Key combination to listen for, e.g. "CTRL+SHIFT+F1".</param>
+        /// <param name="callback">
+        /// Python function to invoke when the hotkey is pressed.
+        /// If <c>null</c>, the hotkey will be unregistered.
+        /// </param>
+        public void OnHotKey(string key, object callback = null)
+        {
+            if (string.IsNullOrEmpty(key))
+                return;
+
+            if (engine == null || engine.Operations == null)
+            {
+                return;
+            }
+
+            string normalized = CUOKeyboard.NormalizeKeyString(key);
+            EnsureKeyboardHook();
+
+            if (callback == null || !engine.Operations.IsCallable(callback))
+            {
+                hotkeyCallbacks.TryRemove(normalized, out _);
+                return;
+            }
+
+            hotkeyCallbacks[normalized] = callback;
+        }
 
         /// <summary>
         /// Set a variable that is shared between scripts.
@@ -342,7 +477,7 @@ namespace ClassicUO.LegionScripting
 
                 if (i != null)
                 {
-                    var bp = World.Player.FindItemByLayer(Layer.Backpack);
+                    var bp = World.Player.Backpack;
                     MoveItemQueue.Instance.Enqueue(i, bp);
                     Found = i.Serial;
                     return new PyItem(i);
@@ -371,7 +506,7 @@ namespace ClassicUO.LegionScripting
 
                 if (i != null)
                 {
-                    var bp = World.Player.FindItemByLayer(Layer.Backpack);
+                    var bp = World.Player.Backpack;
                     MoveItemQueue.Instance.Enqueue(i, bp);
                     Found = i.Serial;
                     return new PyItem(i);
@@ -491,7 +626,7 @@ namespace ClassicUO.LegionScripting
         ///     for item in items:
         ///         data = API.ItemNameAndProps(item)
         ///         if data and "An Exotic Fish" in data:
-        ///             API.QueMoveItem(item, barrel)
+        ///             API.QueueMoveItem(item, barrel)
         /// ```
         /// </summary>
         /// <param name="serial"></param>
@@ -499,7 +634,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="amt">Amount to move</param>
         /// <param name="x">X coordinate inside a container</param>
         /// <param name="y">Y coordinate inside a container</param>
-        public void QueMoveItem(uint serial, uint destination, ushort amt = 0, int x = 0xFFFF, int y = 0xFFFF) => MainThreadQueue.InvokeOnMainThread
+        public void QueueMoveItem(uint serial, uint destination, ushort amt = 0, int x = 0xFFFF, int y = 0xFFFF) => MainThreadQueue.InvokeOnMainThread
         (() =>
             {
                 Client.Game.GetScene<GameScene>()?.MoveItemQueue.Enqueue(serial, destination, amt, x, y);
@@ -544,7 +679,7 @@ namespace ClassicUO.LegionScripting
         /// ```py
         /// items = API.ItemsInContainer(API.Backpack)
         /// for item in items:
-        ///   API.QueMoveItemOffset(item, 0, 1, 0, 0)
+        ///   API.QueueMoveItemOffset(item, 0, 1, 0, 0)
         /// ```
         /// </summary>
         /// <param name="serial"></param>
@@ -553,7 +688,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="y">Offset from your location</param>
         /// <param name="z">Offset from your location. Leave blank in most cases</param>
         /// <param name="OSI">True if you are playing OSI</param>
-        public void QueMoveItemOffset(uint serial, ushort amt = 0, int x = 0, int y = 0, int z = 0, bool OSI = false) => MainThreadQueue.InvokeOnMainThread
+        public void QueueMoveItemOffset(uint serial, ushort amt = 0, int x = 0, int y = 0, int z = 0, bool OSI = false) => MainThreadQueue.InvokeOnMainThread
         (() =>
             {
                 World.Map.GetMapZ(World.Player.X + x, World.Player.Y + y, out sbyte gz, out sbyte gz2);
@@ -565,7 +700,7 @@ namespace ClassicUO.LegionScripting
                     z = gz;
                     useCalculatedZ = true;
                 }
-                if(gz2 > z)
+                if (gz2 > z)
                 {
                     z = gz2;
                     useCalculatedZ = true;
@@ -606,7 +741,7 @@ namespace ClassicUO.LegionScripting
                     z = gz;
                     useCalculatedZ = true;
                 }
-                if(gz2 > z)
+                if (gz2 > z)
                 {
                     z = gz2;
                     useCalculatedZ = true;
@@ -660,6 +795,91 @@ namespace ClassicUO.LegionScripting
         public void CastSpell(string spellName) => MainThreadQueue.InvokeOnMainThread(() => { GameActions.CastSpellByName(spellName); });
 
         /// <summary>
+        /// Dress from a saved dress configuration.
+        /// Example:
+        /// ```py
+        /// API.Dress("PvP Gear")
+        /// ```
+        /// </summary>
+        /// <param name="name">The name of the dress configuration</param>
+        public void Dress(string name) => MainThreadQueue.InvokeOnMainThread(() =>
+        {
+            if (string.IsNullOrEmpty(name))
+                return;
+
+            DressConfig config = DressAgentManager.Instance.CurrentPlayerConfigs
+                .FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+            if (config != null)
+            {
+                DressAgentManager.Instance.DressFromConfig(config);
+            }
+        });
+
+        /// <summary>
+        /// Get all available dress configurations.
+        /// Example:
+        /// ```py
+        /// outfits = API.GetAvailableDressOutfits()
+        /// if outfits:
+        ///   Dress(outfits[0])
+        /// ```
+        /// </summary>
+        /// <returns>Returns a list of outfit names for use with Dress(outfitname)</returns>
+        public PythonList GetAvailableDressOutfits() => MainThreadQueue.InvokeOnMainThread(() =>
+        {
+            PythonList list = new();
+            foreach (var config in DressAgentManager.Instance.CurrentPlayerConfigs)
+            {
+                list.Add(config.Name);
+            }
+
+            return list;
+        });
+
+        /// <summary>
+        /// Runs an organizer agent to move items between containers.
+        /// Example:
+        /// ```py
+        /// # Run organizer with default containers
+        /// API.Organizer("MyOrganizer")
+        ///
+        /// # Run organizer with specific source and destination
+        /// API.Organizer("MyOrganizer", 0x40001234, 0x40005678)
+        /// ```
+        /// </summary>
+        /// <param name="name">The name of the organizer configuration to run</param>
+        /// <param name="source">Optional serial of the source container (0 for default)</param>
+        /// <param name="destination">Optional serial of the destination container (0 for default)</param>
+        public void Organizer(string name, uint source = 0, uint destination = 0)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                GameActions.Print("Invalid organizer name", 32);
+                return;
+            }
+
+            OrganizerAgent.Instance.RunOrganizer(name, source, destination);
+        }
+
+        /// <summary>
+        /// Executes a client command as if typed in the game console
+        /// </summary>
+        /// <param name="command">The command to execute (including any arguments)</param>
+        public void ClientCommand(string command)
+        {
+            if (string.IsNullOrEmpty(command))
+            {
+                GameActions.Print("Command can't be empty", 32);
+                return;
+            }
+
+            var split = command.Split(' ');
+
+            World.Instance.CommandManager.Execute(split[0], split);
+        }
+
+        /// <summary>
         /// Check if a buff is active.
         /// Example:
         /// ```py
@@ -672,14 +892,14 @@ namespace ClassicUO.LegionScripting
         public bool BuffExists(string buffName) => MainThreadQueue.InvokeOnMainThread
         (() =>
             {
-                if (string.IsNullOrEmpty(buffName))
+                if (string.IsNullOrEmpty(buffName) || World == null || World.Player == null)
                     return false;
 
                 foreach (BuffIcon buff in World.Player.BuffIcons.Values)
                 {
                     if (buff == null) continue;
 
-                    if (buff.Title.Contains(buffName))
+                    if (buff.Title.Contains(buffName, StringComparison.OrdinalIgnoreCase))
                         return true;
                 }
 
@@ -701,6 +921,8 @@ namespace ClassicUO.LegionScripting
         /// <returns></returns>
         public Buff[] ActiveBuffs() => MainThreadQueue.InvokeOnMainThread(() =>
         {
+            if (World == null || World.Player == null) return new Buff[]{};
+
             List<Buff> buffs = new();
 
             foreach (BuffIcon buff in World.Player.BuffIcons.Values)
@@ -722,7 +944,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="hue">Color of the message</param>
         public void SysMsg(string message, ushort hue = 946)
         {
-            if(!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
                 MainThreadQueue.InvokeOnMainThread(() => GameActions.Print(World, message, hue));
         }
 
@@ -736,7 +958,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="message">The message to say</param>
         public void Msg(string message)
         {
-            if(!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
                 MainThreadQueue.InvokeOnMainThread(() => { GameActions.Say(message, ProfileManager.CurrentProfile.SpeechHue); });
         }
 
@@ -775,7 +997,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="message">The message</param>
         public void PartyMsg(string message)
         {
-            if(!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
                 MainThreadQueue.InvokeOnMainThread(() => { GameActions.SayParty(message); });
         }
 
@@ -789,7 +1011,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="message"></param>
         public void GuildMsg(string message)
         {
-            if(!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
                 MainThreadQueue.InvokeOnMainThread(() => { GameActions.Say(message, ProfileManager.CurrentProfile.GuildMessageHue, MessageType.Guild); });
         }
 
@@ -803,7 +1025,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="message"></param>
         public void AllyMsg(string message)
         {
-            if(!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
                 MainThreadQueue.InvokeOnMainThread(() => { GameActions.Say(message, ProfileManager.CurrentProfile.AllyMessageHue, MessageType.Alliance); });
         }
 
@@ -817,7 +1039,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="message"></param>
         public void WhisperMsg(string message)
         {
-            if(!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
                 MainThreadQueue.InvokeOnMainThread(() => { GameActions.Say(message, ProfileManager.CurrentProfile.WhisperHue, MessageType.Whisper); });
         }
 
@@ -831,7 +1053,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="message"></param>
         public void YellMsg(string message)
         {
-            if(!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
                 MainThreadQueue.InvokeOnMainThread(() => { GameActions.Say(message, ProfileManager.CurrentProfile.YellHue, MessageType.Yell); });
         }
 
@@ -845,7 +1067,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="message"></param>
         public void EmoteMsg(string message)
         {
-            if(!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
                 MainThreadQueue.InvokeOnMainThread(() => { GameActions.Say(message, ProfileManager.CurrentProfile.EmoteHue, MessageType.Emote); });
         }
 
@@ -855,7 +1077,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="message"></param>
         public void GlobalMsg(string message)
         {
-            if(!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
                 MainThreadQueue.InvokeOnMainThread(() => { AsyncNetClient.Socket.Send_ChatMessageCommand(message); });
         }
 
@@ -1207,12 +1429,12 @@ namespace ClassicUO.LegionScripting
             if (!wait)
                 return pathFindStatus;
 
-            if(timeout > 30)
+            if (timeout > 30)
                 timeout = 30;
 
             var expire = DateTime.Now.AddSeconds(timeout);
 
-            while (MainThreadQueue.InvokeOnMainThread(()=>World.Player.Pathfinder.AutoWalking))
+            while (MainThreadQueue.InvokeOnMainThread(() => World.Player.Pathfinder.AutoWalking))
             {
                 if (DateTime.Now >= expire)
                 {
@@ -1223,7 +1445,7 @@ namespace ClassicUO.LegionScripting
 
             MainThreadQueue.InvokeOnMainThread(World.Player.Pathfinder.StopAutoWalk);
 
-            return MainThreadQueue.InvokeOnMainThread(()=>World.Player.DistanceFrom(new Vector2(x, y)) <= distance);
+            return MainThreadQueue.InvokeOnMainThread(() => World.Player.DistanceFrom(new Vector2(x, y)) <= distance);
         }
 
         /// <summary>
@@ -1259,15 +1481,15 @@ namespace ClassicUO.LegionScripting
                 }
             );
 
-            if(!wait || (x == 0 && y == 0))
+            if (!wait || (x == 0 && y == 0))
                 return pathFindStatus;
 
-            if(timeout > 30)
+            if (timeout > 30)
                 timeout = 30;
 
             var expire = DateTime.Now.AddSeconds(timeout);
 
-            while (MainThreadQueue.InvokeOnMainThread(()=>World.Player.Pathfinder.AutoWalking))
+            while (MainThreadQueue.InvokeOnMainThread(() => World.Player.Pathfinder.AutoWalking))
             {
                 if (DateTime.Now >= expire)
                 {
@@ -1278,7 +1500,7 @@ namespace ClassicUO.LegionScripting
 
             MainThreadQueue.InvokeOnMainThread(World.Player.Pathfinder.StopAutoWalk);
 
-            return MainThreadQueue.InvokeOnMainThread(()=>World.Player.DistanceFrom(new Vector2(x, y)) <= distance);
+            return MainThreadQueue.InvokeOnMainThread(() => World.Player.DistanceFrom(new Vector2(x, y)) <= distance);
         }
 
         /// <summary>
@@ -1291,7 +1513,14 @@ namespace ClassicUO.LegionScripting
         /// ```
         /// </summary>
         /// <returns>true/false</returns>
-        public bool Pathfinding() => MainThreadQueue.InvokeOnMainThread(() => World.Player.Pathfinder.AutoWalking);
+        public bool Pathfinding() => MainThreadQueue.InvokeOnMainThread(() =>
+            {
+                if (World == null || World.Player == null)
+                    return false;
+
+                return World.Player.Pathfinder.AutoWalking;
+            }
+        );
 
         /// <summary>
         /// Cancel pathfinding.
@@ -1562,7 +1791,11 @@ namespace ClassicUO.LegionScripting
         public uint RequestTarget(double timeout = 5)
         {
             var expire = DateTime.Now.AddSeconds(timeout);
-            MainThreadQueue.InvokeOnMainThread(() => World.TargetManager.SetTargeting(CursorTarget.Internal, CursorType.Target, TargetType.Neutral));
+            MainThreadQueue.InvokeOnMainThread(() =>
+            {
+                World.TargetManager.LastTargetInfo.Clear();
+                World.TargetManager.SetTargeting(CursorTarget.Internal, CursorType.Target, TargetType.Neutral);
+            });
 
             while (DateTime.Now < expire)
                 if (!MainThreadQueue.InvokeOnMainThread(() => World.TargetManager.IsTargeting))
@@ -2061,27 +2294,52 @@ namespace ClassicUO.LegionScripting
                 if (g == null)
                     return false;
 
-
                 bool regex = text.StartsWith("$");
 
-                    if (regex)
-                        text = text.Substring(1);
+                if (regex)
+                    text = text.Substring(1);
 
-                    foreach (Control c in g.Children)
-                    {
-                        if (c is Label l && (l.Text.Contains(text) || (regex && System.Text.RegularExpressions.Regex.IsMatch(l.Text, text))))
-                        {
-                            return true;
-                        }
-                        else if (c is HtmlControl ht && (ht.Text.Contains(text) || (regex && System.Text.RegularExpressions.Regex.IsMatch(ht.Text, text))))
-                        {
-                            return true;
-                        }
-                    }
+                string allControlsText = string.Empty;
+
+                foreach (Control c in g.Children)
+                {
+                    if (c is Label l)
+                        allControlsText += l.Text + " ";
+                    else if (c is HtmlControl ht)
+                        allControlsText += ht.Text + " ";
+                }
+
+                if (allControlsText.Contains(text) || (regex && RegexHelper.GetRegex(text).IsMatch(allControlsText)))
+                    return true;
 
                 return false;
             }
         );
+
+        /// <summary>
+        /// This will return a string of all the text in a server-side gump.
+        /// </summary>
+        /// <param name="ID">Gump ID, blank to use the last gump.</param>
+        /// <returns></returns>
+        public string GetGumpContents(uint ID = uint.MaxValue)
+        {
+            Gump g = UIManager.GetGumpServer(ID == uint.MaxValue ? World.Player.LastGumpID : ID);
+
+            if (g == null)
+                return string.Empty;
+
+            string allControlsText = string.Empty;
+
+            foreach (Control c in g.Children)
+            {
+                if (c is Label l)
+                    allControlsText += l.Text + " ";
+                else if (c is HtmlControl ht)
+                    allControlsText += ht.Text + " ";
+            }
+
+            return allControlsText;
+        }
 
         /// <summary>
         /// Get a gump by ID.
@@ -2090,10 +2348,10 @@ namespace ClassicUO.LegionScripting
         /// gump = API.GetGump()
         /// if gump:
         ///   API.SysMsg("Found the gump!")
-        ///   API.CloseGump(gump)
+        ///   gump.Dispose() #Close it
         /// ```
         /// </summary>
-        /// <param name="ID">Leabe blank to use last gump opened from server</param>
+        /// <param name="ID">Leave blank to use last gump opened from server</param>
         /// <returns></returns>
         public Gump GetGump(uint ID = uint.MaxValue) => MainThreadQueue.InvokeOnMainThread
         (() =>
@@ -2103,6 +2361,22 @@ namespace ClassicUO.LegionScripting
                 return g;
             }
         );
+
+        /// <summary>
+        /// Gets all currently open server-side gumps.
+        /// </summary>
+        /// <returns>A PythonList containing all open server gumps, or null if none are open</returns>
+        public PythonList GetAllGumps() => MainThreadQueue.InvokeOnMainThread<PythonList>(() =>
+        {
+            Gump[] serverGumps = UIManager.Gumps.Where(g => g.ServerSerial > 0).ToArray();
+
+            if (!serverGumps.Any())
+                return null;
+
+            PythonList list = new();
+            list.AddRange(serverGumps);
+            return list;
+        });
 
         /// <summary>
         /// Wait for a server-side gump.
@@ -2252,7 +2526,7 @@ namespace ClassicUO.LegionScripting
 
             foreach (var je in JournalEntries.ToArray())
             {
-                if(je.Disposed) continue;
+                if (je.Disposed) continue;
 
                 foreach (var msg in msgs)
                 {
@@ -2338,7 +2612,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="matchingEntries">String or regex to match with. If this is set, only matching entries will be removed.</param>
         public void ClearJournal(string matchingEntries = "")
         {
-            if(string.IsNullOrEmpty(matchingEntries))
+            if (string.IsNullOrEmpty(matchingEntries))
             {
                 while (JournalEntries.TryDequeue(out _))
                 {
@@ -2346,7 +2620,7 @@ namespace ClassicUO.LegionScripting
             }
             else
             {
-                ConcurrentQueue<PyJournalEntry> newQueue = new ();
+                ConcurrentQueue<PyJournalEntry> newQueue = new();
 
                 foreach (var je in JournalEntries.ToArray())
                 {
@@ -2376,13 +2650,15 @@ namespace ClassicUO.LegionScripting
         /// API.Pause(5)
         /// ```
         /// </summary>
-        /// <param name="seconds"></param>
+        /// <param name="seconds">0-30 seconds.</param>
         public void Pause(double seconds)
         {
-            if (seconds > 2000)
-                seconds = 2000;
+            seconds = Math.Clamp(seconds, 0, 30);
 
-            Thread.Sleep((int)(seconds * 1000));
+            Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken: CancellationToken.Token).Wait(cancellationToken: CancellationToken.Token);
+
+            if (StopRequested)
+                throw new ThreadInterruptedException();
         }
 
         /// <summary>
@@ -2502,12 +2778,12 @@ namespace ClassicUO.LegionScripting
                 if (notoriety == null || notoriety.Count == 0)
                     return null;
 
-                var mob =  World.Mobiles.Values.Where
+                var mob = World.Mobiles.Values.Where
                 (m => !m.IsDestroyed && !m.IsDead && m.Serial != World.Player.Serial && notoriety.Contains
                      ((Notoriety)(byte)m.NotorietyFlag) && m.Distance <= maxDistance && !OnIgnoreList(m)
                 ).OrderBy(m => m.Distance).FirstOrDefault();
 
-                if(mob != null)
+                if (mob != null)
                 {
                     Found = mob.Serial;
                     return new PyMobile(mob);
@@ -2535,7 +2811,7 @@ namespace ClassicUO.LegionScripting
             Found = 0;
             var c = Utility.FindNearestCorpsePython(distance, this);
 
-            if(c != null)
+            if (c != null)
             {
                 Found = c.Serial;
                 return new PyItem(c);
@@ -2592,7 +2868,7 @@ namespace ClassicUO.LegionScripting
 
             var mob = World.Mobiles.Get(serial);
 
-            if(mob != null)
+            if (mob != null)
             {
                 Found = mob.Serial;
                 return new PyMobile(mob);
@@ -2826,6 +3102,62 @@ namespace ClassicUO.LegionScripting
             return multis;
         });
 
+        #region Friends List
+
+        /// <summary>
+        /// Check if a mobile is in the friends list.
+        /// Example:
+        /// ```py
+        /// if API.IsFriend(player.Serial):
+        ///     API.SysMsg("This player is your friend!")
+        /// ```
+        /// </summary>
+        /// <param name="serial">Serial number of the mobile to check</param>
+        /// <returns>True if the mobile is in the friends list, false otherwise</returns>
+        public bool IsFriend(uint serial) => MainThreadQueue.InvokeOnMainThread(() => FriendsListManager.Instance.IsFriend(serial));
+
+        /// <summary>
+        /// Add a mobile to the friends list by serial number.
+        /// Example:
+        /// ```py
+        /// mobile = API.FindMobile(0x12345)
+        /// if mobile:
+        ///     API.AddFriend(mobile.Serial)
+        /// ```
+        /// </summary>
+        /// <param name="serial">Serial number of the mobile to add</param>
+        /// <returns>True if the friend was added successfully, false if already exists or invalid</returns>
+        public bool AddFriend(uint serial) => MainThreadQueue.InvokeOnMainThread(() =>
+        {
+            var mobile = World.Mobiles.Get(serial);
+            return mobile != null && FriendsListManager.Instance.AddFriend(mobile);
+        });
+
+        /// <summary>
+        /// Remove a mobile from the friends list by serial number.
+        /// Example:
+        /// ```py
+        /// API.RemoveFriend(0x12345)
+        /// ```
+        /// </summary>
+        /// <param name="serial">Serial number of the mobile to remove</param>
+        /// <returns>True if the friend was removed successfully, false if not found</returns>
+        public bool RemoveFriend(uint serial) => MainThreadQueue.InvokeOnMainThread(() => FriendsListManager.Instance.RemoveFriend(serial));
+
+        /// <summary>
+        /// Get all friends as an array of serials.
+        /// Example:
+        /// ```py
+        /// friends = API.GetAllFriends()
+        /// for friend in friends:
+        ///     API.FindMobile(friend)
+        /// ```
+        /// </summary>
+        /// <returns>Array of serials representing all friends</returns>
+        public PythonList GetAllFriends() => MainThreadQueue.InvokeOnMainThread(() => FriendsListManager.Instance.GetAllFriends());
+
+        #endregion
+
         #region Gumps
 
         /// <summary>
@@ -2842,7 +3174,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="canMove">Allow the player to move this gump</param>
         /// <param name="keepOpen">If true, the gump won't be closed if the script stops. Otherwise, it will be closed when the script is stopped. Defaults to false.</param>
         /// <returns>A new, empty gump</returns>
-        public Gump CreateGump(bool acceptMouseInput = true, bool canMove = true, bool keepOpen = false)
+        public PyBaseGump CreateGump(bool acceptMouseInput = true, bool canMove = true, bool keepOpen = false)
         {
             var g = new Gump(World, 0, 0)
             {
@@ -2851,10 +3183,12 @@ namespace ClassicUO.LegionScripting
                 WantUpdateSize = true
             };
 
+            PyBaseGump pyGump = new(g);
+
             if (!keepOpen)
                 gumps.Add(g);
 
-            return g;
+            return pyGump;
         }
 
         /// <summary>
@@ -2868,7 +3202,14 @@ namespace ClassicUO.LegionScripting
         /// ```
         /// </summary>
         /// <param name="g">The gump to add</param>
-        public void AddGump(Gump g) => MainThreadQueue.InvokeOnMainThread(() => { UIManager.Add(g); });
+        public void AddGump(object g) => MainThreadQueue.InvokeOnMainThread(() =>
+        {
+            if (g is Gump gump)
+                UIManager.Add(gump);
+
+            if (g is IPyGump { Gump: not null } pyGump)
+                UIManager.Add(pyGump.Gump);
+        });
 
         /// <summary>
         /// Create a checkbox for gumps.
@@ -2887,11 +3228,9 @@ namespace ClassicUO.LegionScripting
         /// <param name="hue">Optional hue</param>
         /// <param name="isChecked">Default false, set to true if you want this checkbox checked on creation</param>
         /// <returns>The checkbox</returns>
-        public Checkbox CreateGumpCheckbox(string text = "", ushort hue = 0, bool isChecked = false) => new Checkbox(0x00D2, 0x00D3, text, color: hue)
-        {
-            CanMove = true,
-            IsChecked = isChecked
-        };
+        public PyCheckbox CreateGumpCheckbox(string text = "", ushort hue = 0, bool isChecked = false) =>
+            new PyCheckbox(new Checkbox(0x00D2, 0x00D3, text, color: hue) { CanMove = true, IsChecked = isChecked }
+            );
 
         /// <summary>
         /// Create a label for a gump.
@@ -3179,9 +3518,9 @@ namespace ClassicUO.LegionScripting
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public ScrollArea CreateGumpScrollArea(int x, int y, int width, int height)
+        public PyScrollArea CreateGumpScrollArea(int x, int y, int width, int height)
         {
-            return new ScrollArea(x, y, width, height, true);
+            return new PyScrollArea(new ScrollArea(x, y, width, height, true));
         }
 
         /// <summary>
@@ -3202,6 +3541,36 @@ namespace ClassicUO.LegionScripting
         }
 
         /// <summary>
+        /// Creates a dropdown control (combobox) with the specified width and items.
+        /// </summary>
+        /// <param name="width">The width of the dropdown control</param>
+        /// <param name="items">Array of strings to display as dropdown options</param>
+        /// <param name="selectedIndex">The initially selected item index (default: 0)</param>
+        /// <returns>A PyControlDropDown wrapper containing the combobox control</returns>
+        public PyControlDropDown CreateDropDown(int width, string[] items, int selectedIndex = 0)
+        {
+            return new PyControlDropDown(new Combobox(0, 0, width, items, selectedIndex));
+        }
+
+        /// <summary>
+        /// Creates a modern nine-slice gump using ModernUIConstants for consistent styling.
+        /// The gump uses the standard modern UI panel texture and border size internally.
+        /// </summary>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
+        /// <param name="width">Initial width</param>
+        /// <param name="height">Initial height</param>
+        /// <param name="resizable">Whether the gump can be resized by dragging corners (default: true)</param>
+        /// <param name="minWidth">Minimum width (default: 50)</param>
+        /// <param name="minHeight">Minimum height (default: 50)</param>
+        /// <param name="onResized">Optional callback function called when the gump is resized</param>
+        /// <returns>A PyNineSliceGump wrapper containing the nine-slice gump control</returns>
+        public PyNineSliceGump CreateModernGump(int x, int y, int width, int height, bool resizable = true, int minWidth = 50, int minHeight = 50, object onResized = null)
+        {
+            return new PyNineSliceGump(this, x, y, width, height, resizable, minWidth, minHeight, onResized);
+        }
+
+        /// <summary>
         /// Add an onClick callback to a control.
         /// Example:
         /// ```py
@@ -3217,14 +3586,24 @@ namespace ClassicUO.LegionScripting
         /// <param name="onClick">The callback function</param>
         /// <param name="leftOnly">Only accept left mouse clicks?</param>
         /// <returns>Returns the control so methods can be chained.</returns>
-        public Control AddControlOnClick(Control control, object onClick, bool leftOnly = true)
+        public object AddControlOnClick(object control, object onClick, bool leftOnly = true)
         {
             if (control == null || onClick == null || !engine.Operations.IsCallable(onClick))
                 return control;
 
-            control.AcceptMouseInput = true;
+            Control wControl = null;
 
-            control.MouseUp += (s, e) =>
+            if(control is Control)
+                wControl = (Control)control;
+            else if (control is PyBaseControl pbc && pbc.Control != null)
+                wControl = pbc.Control;
+
+            if (wControl == null)
+                return control;
+
+            wControl.AcceptMouseInput = true;
+
+            wControl.MouseUp += (s, e) =>
             {
                 if (leftOnly && e.Button != MouseButtonType.Left)
                     return;
@@ -3266,12 +3645,12 @@ namespace ClassicUO.LegionScripting
         /// <param name="control"></param>
         /// <param name="onDispose"></param>
         /// <returns></returns>
-        public Control AddControlOnDisposed(Control control, object onDispose)
+        public PyBaseControl AddControlOnDisposed(PyBaseControl control, object onDispose)
         {
-            if (control == null || onDispose == null || !engine.Operations.IsCallable(onDispose))
+            if (control == null || onDispose == null || control.Control == null || !engine.Operations.IsCallable(onDispose))
                 return control;
 
-            control.Disposed += (s, e) =>
+            control.Control.Disposed += (s, e) =>
             {
                 this?.ScheduleCallback
                 (() =>
@@ -3461,7 +3840,8 @@ namespace ClassicUO.LegionScripting
         /// </summary>
         /// <param name="name"></param>
         public void RemoveMapMarker(string name) => MainThreadQueue.InvokeOnMainThread
-        (() => {
+        (() =>
+        {
             WorldMapGump wmap = UIManager.GetGump<WorldMapGump>();
 
             if (wmap == null || string.IsNullOrEmpty(name))
@@ -3474,12 +3854,12 @@ namespace ClassicUO.LegionScripting
         /// Check if the move item queue is being processed. You can use this to prevent actions if the queue is being processed.
         /// Example:
         /// ```py
-        /// if API.IsProcessingMoveQue():
+        /// if API.IsProcessingMoveQueue():
         ///   API.Pause(0.5)
         /// ```
         /// </summary>
         /// <returns></returns>
-        public bool IsProcessingMoveQue() => MainThreadQueue.InvokeOnMainThread(() => !MoveItemQueue.Instance.IsEmpty);
+        public bool IsProcessingMoveQueue() => MainThreadQueue.InvokeOnMainThread(() => !MoveItemQueue.Instance.IsEmpty);
 
         /// <summary>
         /// Check if the use item queue is being processed. You can use this to prevent actions if the queue is being processed.
@@ -3576,7 +3956,7 @@ namespace ClassicUO.LegionScripting
         /// <param name="map">Defaults to current map</param>
         public void MarkTile(int x, int y, ushort hue, int map = -1) => MainThreadQueue.InvokeOnMainThread(() =>
         {
-            if(map < 0)
+            if (map < 0)
                 map = World.Map.Index;
 
             TileMarkerManager.Instance.AddTile(x, y, map, hue);
@@ -3610,7 +3990,7 @@ namespace ClassicUO.LegionScripting
         {
             UIManager.GetGump<QuestArrowGump>(identifier)?.Dispose();
 
-            if(x > 0 && y > 0)
+            if (x > 0 && y > 0)
             {
                 var arrow = new QuestArrowGump(World, identifier, x, y) { CanCloseWithRightClick = true };
                 UIManager.Add(arrow);

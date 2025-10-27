@@ -26,6 +26,7 @@ Convert scripts from other scripting languages/systems into Legion Scripting API
 3. Convert syntax and method calls to Legion format
 4. Maintain original script logic and behavior
 5. Test converted script for compatibility
+6. Place finished conversions inside converted folder in subfolders named after the script
 
 ### Important Notes
 - Focus on accurate functional conversion, not literal translation
@@ -57,3 +58,5 @@ Convert scripts from other scripting languages/systems into Legion Scripting API
 - Hue (ushort) are the same across scripting languages
 - For finding all items you can use uint max value( 4294967295 ) in place of a container serial in ItemsInContainer or FindType with uint max value as it's graphic. This will match all items.
 - Player weight can be accessed with API.Player.Weight and MaxWeight
+- Target.TargetResource is the equivelent of API.TargetResource
+- A players backpack is accessed via API.Backpack
